@@ -69,6 +69,9 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 	@Override
 	public String generateBeanName(BeanDefinition definition, BeanDefinitionRegistry registry) {
 		if (definition instanceof AnnotatedBeanDefinition) {
+			/**
+			 * 从注解中获取用户设置的beanName, 如果用户有设置，则进行beanName校验，没有则返回null
+			 */
 			String beanName = determineBeanNameFromAnnotation((AnnotatedBeanDefinition) definition);
 			if (StringUtils.hasText(beanName)) {
 				// Explicit bean name found.
@@ -76,6 +79,12 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 			}
 		}
 		// Fallback: generate a unique default bean name.
+		/**
+		 * 生成默认beanName名称
+		 * 1.如果类的前两个字母都为大写，则直接返回类的简单名称
+		 * 2.否则将类的简单名称，首字母小写，其他的保持原来的
+		 * 3.如果存在相同的名称，则在进行doScan时，会报conflicts with existing。
+		 */
 		return buildDefaultBeanName(definition, registry);
 	}
 
