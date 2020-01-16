@@ -236,7 +236,7 @@ public class AnnotatedBeanDefinitionReader {
 		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));
 
 		/**
-		 * 解析 abd 的metadata注解信息，将解析结果保持到 BeanDefinition 实例中
+		 * 解析 abd 的metadata注解信息，将解析结果保存到 BeanDefinition 实例中
 		 */
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
 		if (qualifiers != null) {
