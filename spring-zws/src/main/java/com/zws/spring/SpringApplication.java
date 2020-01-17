@@ -14,7 +14,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  */
 
 @ComponentScan(value = {"com.zws.spring"})
-//@EnableAspectJAutoProxy
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class SpringApplication {
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext();
@@ -25,10 +25,22 @@ public class SpringApplication {
 
 //		manualBeanRegister(ac);
 
+		nomalAop(ac);
+
+	}
+
+	private static void nomalAop(AnnotationConfigApplicationContext ac) {
+		IUserService userAService = (IUserService) ac.getBean("userBService");
+		System.out.println(userAService.getName());
+
+		System.out.println("#############################");
+		IUserService userAService2 = (IUserService) ac.getBean("userBService");
+		System.out.println(userAService2.getName());
 	}
 
 	/**
 	 * 手动注册bean 测试
+	 *
 	 * @param ac
 	 */
 	private static void manualBeanRegister(AnnotationConfigApplicationContext ac) {
@@ -37,8 +49,8 @@ public class SpringApplication {
 	}
 
 	/**
-	 * @DeclareParents 注解测试。 需开启AOP代理 @EnableAspectJAutoProxy
 	 * @param ac
+	 * @DeclareParents 注解测试。 需开启AOP代理 @EnableAspectJAutoProxy
 	 */
 	private static void aopDeclareParentsAnnotation(AnnotationConfigApplicationContext ac) {
 		System.out.println("###################");
@@ -47,7 +59,7 @@ public class SpringApplication {
 
 
 		System.out.println("++++++++++++++++++++");
-		IUserService bean = (IUserService)ac.getBean(NotMethodService.class);
+		IUserService bean = (IUserService) ac.getBean(NotMethodService.class);
 		System.out.println(bean.getName());
 
 		/**

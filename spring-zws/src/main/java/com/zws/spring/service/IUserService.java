@@ -10,4 +10,10 @@ public interface IUserService {
 	 * @return
 	 */
 	String getName();
+
+	/**
+	 * 获取值
+	 * @return
+	 */
+	String getValue();
 }
