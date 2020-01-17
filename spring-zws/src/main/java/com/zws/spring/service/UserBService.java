@@ -37,5 +37,6 @@ public class UserBService implements IUserService {
 
 	public void printUserInfo(UserInfo info){
 		System.out.println(info.name + info.age);
+		throw new NullPointerException();
 	}
 }

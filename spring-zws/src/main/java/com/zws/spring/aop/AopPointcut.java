@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
  * @date 2020-01-17 16:12
  */
 @Aspect
-@Component
-public class AopExecution {
+//@Component
+public class AopPointcut {
 	/**
 	 * 通用表达式，可针对修饰符、返回值类型、方法参数、异常类型 进行匹配(全能)
 	 * execution(modifiers-pattern? ret-type-pattern declaring-type-pattern?name-pattern(param-pattern) throws-pattern?)
