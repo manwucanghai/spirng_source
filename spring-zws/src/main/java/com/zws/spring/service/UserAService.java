@@ -1,5 +1,6 @@
 package com.zws.spring.service;
 
+import com.zws.spring.annotation.ClassField;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
  */
 @Component(value = "userAService")
 @Scope("prototype")
+@ClassField
 public class UserAService implements IUserService{
 
 	private String name = "UserA";
@@ -26,5 +28,9 @@ public class UserAService implements IUserService{
 	@Override
 	public String getValue() {
 		return "Hello World";
+	}
+
+	protected void printInfos(){
+		System.out.println(this.name + " for UserA");
 	}
 }

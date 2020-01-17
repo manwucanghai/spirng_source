@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
  * @author zhengws
  * @date 2020-01-17 06:55
  */
-@Component("instantiationMode")
+//@Component("instantiationMode")
 //@Aspect("perthis(this(com.zws.spring.service.UserAService))")
 @Aspect("perthis(com.zws.spring.aop.InstantiationMode.pointcut())")  //这里是指定切面.
 @Scope("prototype")

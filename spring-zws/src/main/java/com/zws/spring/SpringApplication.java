@@ -1,9 +1,11 @@
 package com.zws.spring;
 
 import com.zws.spring.entity.TestBean;
+import com.zws.spring.entity.UserInfo;
 import com.zws.spring.service.IUserService;
 import com.zws.spring.service.NotMethodService;
 import com.zws.spring.service.UserAService;
+import com.zws.spring.service.UserBService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -27,15 +29,19 @@ public class SpringApplication {
 
 		nomalAop(ac);
 
+
 	}
 
 	private static void nomalAop(AnnotationConfigApplicationContext ac) {
-		IUserService userAService = (IUserService) ac.getBean("userBService");
+		IUserService userAService = (IUserService) ac.getBean("userAService");
 		System.out.println(userAService.getName());
 
+
 		System.out.println("#############################");
-		IUserService userAService2 = (IUserService) ac.getBean("userBService");
-		System.out.println(userAService2.getName());
+		UserBService userB = ac.getBean(UserBService.class);
+		userB.printMessage("UserB printMessage");
+		userB.printMessageWithAge("UserB printMessageWithAge ", 20);
+		userB.printUserInfo(new UserInfo("zws",29));
 	}
 
 	/**
