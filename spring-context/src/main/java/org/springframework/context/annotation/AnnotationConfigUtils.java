@@ -148,6 +148,9 @@ public abstract class AnnotationConfigUtils {
 	public static Set<BeanDefinitionHolder> registerAnnotationConfigProcessors(
 			BeanDefinitionRegistry registry, @Nullable Object source) {
 
+		/**
+		 * 从BeanDefinitionRegistry中获取beanFactory，也就是从AnnotationConfigApplicationContext中获取。
+		 */
 		DefaultListableBeanFactory beanFactory = unwrapDefaultListableBeanFactory(registry);
 		if (beanFactory != null) {
 			if (!(beanFactory.getDependencyComparator() instanceof AnnotationAwareOrderComparator)) {
