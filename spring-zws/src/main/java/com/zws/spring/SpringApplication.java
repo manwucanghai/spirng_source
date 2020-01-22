@@ -23,11 +23,11 @@ public class SpringApplication {
 		ac.register(SpringApplication.class);
 		ac.refresh();
 
-//		aopDeclareParentsAnnotation(ac);
+		aopDeclareParentsAnnotation(ac);
 
 //		manualBeanRegister(ac);
 
-		nomalAop(ac);
+//		nomalAop(ac);
 
 
 	}

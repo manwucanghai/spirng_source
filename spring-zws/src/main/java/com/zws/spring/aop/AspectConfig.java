@@ -12,17 +12,17 @@ import org.springframework.stereotype.Component;
  * @author zhengws
  * @date 2020-01-16 10:06
  */
-//@Aspect
-//@Component
+@Aspect
+@Component
 public class AspectConfig {
 
-//	/**
+	/**
 //	 * 测试采用@DeclareParents 为某个类(com.zws.spring.service.NotMethodService), 增强特定功能(IUserService)
 //	 */
 //	@DeclareParents(value = "com.zws.spring.service.NotMethodService", defaultImpl = UserAService.class)
 //	public static IUserService iUserService;
 
-	@Pointcut("execution(* com.zws.spring.service.NotMethodService(..))")
+	@Pointcut("execution(* com.zws.spring.service.NotMethodService.*.*(..))")
 	private void pointcut(){}
 
 

@@ -20,5 +20,8 @@ public class SpringInitializeApplication {
 		TestService testService = ac.getBean(TestService.class);
 		System.out.println(testService.query());
 
+		NomalClass nomalClass = ac.getBean(NomalClass.class);
+		nomalClass.print("Hello World");
+
 	}
 }

@@ -6,4 +6,7 @@ package com.zws.springinitialize.imports;
  */
 public class NomalClass {
 
+	public void print(String message){
+		System.out.println(message);
+	}
 }

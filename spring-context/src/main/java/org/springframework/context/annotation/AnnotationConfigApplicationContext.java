@@ -62,7 +62,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * Create a new AnnotationConfigApplicationContext that needs to be populated
 	 * through {@link #register} calls and then manually {@linkplain #refresh refreshed}.
 	 *
-	 * 1.调用父类的构造方法，创建DefaultListableBeanFactory实例，为默认的beanFactory.
+	 * 1.调用父类的构造方法，创建DefaultListableBeanFactory实例，做为默认的beanFactory.
 	 * 2.创建一个读取注解的Bean定义读取器
 	 * 	  2.1 注册5个Spring内置的Processors
 	 * 3. 创建类路径扫描器
