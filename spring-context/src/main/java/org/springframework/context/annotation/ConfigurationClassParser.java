@@ -216,10 +216,15 @@ class ConfigurationClassParser {
 			return;
 		}
 
+		/**
+		 * 判断本类是否被其他类@Import (调用processConfigurationClass(configClass) 方法，结束后就会将 configClass放入到 configurationClasses中)
+		 * 如果 existingClass 不为空，则说明该类被其他类进行@Import.
+		 */
 		ConfigurationClass existingClass = this.configurationClasses.get(configClass);
 		if (existingClass != null) {
 			if (configClass.isImported()) {
 				if (existingClass.isImported()) {
+					// 处理被其他类Import
 					existingClass.mergeImportedBy(configClass);
 				}
 				// Otherwise ignore new imported config class; existing non-imported class overrides it.
@@ -307,7 +312,11 @@ class ConfigurationClassParser {
 		 * 2. ImportBeanDefinitionRegistrar
 		 * 3. 普通类
 		 *
-		 * 如果这个类中配置了@Import 则将@Import中配置的value值传递进去解析，在解析过程中，发现这个类是ImportSelector，则回调selector方法。
+		 * 如果这个类中配置了@Import ，则递归后去@Import中配置的value值，并将vlaue值集合传递进去解析。
+		 * 如果在解析过程中
+		 * 1. 如果这个类是ImportSelector，则回调selectImports方法。
+		 * 2. 如果这个类是ImportBeanDefinitionRegistrar, 则会将该类添加到 configClass的importBeanDefinitionRegistrars Map中。
+		 * 3. 如果该类是普通类，则将该类当做普通配置类进行解析
 		 */
 		processImports(configClass, sourceClass, getImports(sourceClass), true);
 
@@ -561,22 +570,36 @@ class ConfigurationClassParser {
 			try {
 				for (SourceClass candidate : importCandidates) {
 					if (candidate.isAssignable(ImportSelector.class)) {
+						// 如果实现了 ImportSelector 接口
 						// Candidate class is an ImportSelector -> delegate to it to determine imports
 						Class<?> candidateClass = candidate.loadClass();
 						/**
 						 * 发射实例化对象。
 						 */
 						ImportSelector selector = BeanUtils.instantiateClass(candidateClass, ImportSelector.class);
+						/**
+						 * 如果 selector 是org.springframework.beans.factory.Aware的子类，则回调相应的方法。
+						 */
 						ParserStrategyUtils.invokeAwareMethods(
 								selector, this.environment, this.resourceLoader, this.registry);
+
+
 						if (selector instanceof DeferredImportSelector) {
 							this.deferredImportSelectorHandler.handle(configClass, (DeferredImportSelector) selector);
 						} else {
+							/**
+							 * 回调 selectImports方法.
+							 */
 							String[] importClassNames = selector.selectImports(currentSourceClass.getMetadata());
 							Collection<SourceClass> importSourceClasses = asSourceClasses(importClassNames);
+
+							/**
+							 * 根据获取的importSourceClasses，递归调用processImports
+							 */
 							processImports(configClass, currentSourceClass, importSourceClasses, false);
 						}
 					} else if (candidate.isAssignable(ImportBeanDefinitionRegistrar.class)) {
+						// 如果实现了 ImportBeanDefinitionRegistrar 接口
 						// Candidate class is an ImportBeanDefinitionRegistrar ->
 						// delegate to it to register additional bean definitions
 						Class<?> candidateClass = candidate.loadClass();
@@ -584,10 +607,18 @@ class ConfigurationClassParser {
 								BeanUtils.instantiateClass(candidateClass, ImportBeanDefinitionRegistrar.class);
 						ParserStrategyUtils.invokeAwareMethods(
 								registrar, this.environment, this.resourceLoader, this.registry);
+						/**
+						 * 添加到 configClass的 importBeanDefinitionRegistrars Map中。
+						 */
 						configClass.addImportBeanDefinitionRegistrar(registrar, currentSourceClass.getMetadata());
 					} else {
 						// Candidate class not an ImportSelector or ImportBeanDefinitionRegistrar ->
 						// process it as an @Configuration class
+						/**
+						 * 1. 如果是普通类，则加入到importStack，作用是？？
+						 * 2. 调用processConfigurationClass 进行处理
+						 *    processConfigurationClass里面主要就是把该类放到configurationClasses集合中，提供后续进行解析成bd继而注册
+						 */
 						this.importStack.registerImport(
 								currentSourceClass.getMetadata(), candidate.getMetadata().getClassName());
 						processConfigurationClass(candidate.asConfigClass(configClass));
