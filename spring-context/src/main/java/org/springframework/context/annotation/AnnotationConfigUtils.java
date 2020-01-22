@@ -144,12 +144,20 @@ public abstract class AnnotationConfigUtils {
 	 * that this registration was triggered from. May be {@code null}.
 	 * @return a Set of BeanDefinitionHolders, containing all bean definitions
 	 * that have actually been registered by this call
+	 *
+	 *
+	 * 根据给定的registry，注册所有注解相关的处理器
+	 * 1. ConfigurationClassPostProcessor
+	 * 2. AutowiredAnnotationBeanPostProcessor
+	 * 3. CommonAnnotationBeanPostProcessor
+	 * 4. EventListenerProcessor
+	 * 5. DefaultEventListenerFactory
 	 */
 	public static Set<BeanDefinitionHolder> registerAnnotationConfigProcessors(
 			BeanDefinitionRegistry registry, @Nullable Object source) {
 
 		/**
-		 * 从BeanDefinitionRegistry中获取beanFactory，也就是从AnnotationConfigApplicationContext中获取。
+		 * 从registry中获取beanFactory，也就是从AnnotationConfigApplicationContext中获取。
 		 */
 		DefaultListableBeanFactory beanFactory = unwrapDefaultListableBeanFactory(registry);
 		if (beanFactory != null) {
@@ -212,6 +220,14 @@ public abstract class AnnotationConfigUtils {
 		return beanDefs;
 	}
 
+	/**
+	 * 1. 设置 definition 角色，标识由spring内部实现
+	 * 2. 将 definition 注册到 beanDefinitionMap 中。
+	 * @param registry
+	 * @param definition
+	 * @param beanName
+	 * @return
+	 */
 	private static BeanDefinitionHolder registerPostProcessor(
 			BeanDefinitionRegistry registry, RootBeanDefinition definition, String beanName) {
 

@@ -61,6 +61,14 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	/**
 	 * Create a new AnnotationConfigApplicationContext that needs to be populated
 	 * through {@link #register} calls and then manually {@linkplain #refresh refreshed}.
+	 *
+	 * 1.调用父类的构造方法，创建DefaultListableBeanFactory实例，为默认的beanFactory.
+	 * 2.创建一个读取注解的Bean定义读取器
+	 * 	  2.1 注册5个Spring内置的Processors
+	 * 3. 创建类路径扫描器
+	 * 	  a.该扫描器仅仅是为了提供给程序员，手动调用 AnnotationConfigApplicationContext 的 scan() 方法进行扫描
+	 * 	  b.Spring 内部扫描@ComponentScan，并不是采用该对象进行扫描，而是重新new一个ClassPathBeanDefinitionScanner对象进行扫描。
+	 *
 	 */
 	public AnnotationConfigApplicationContext() {
 		this.reader = new AnnotatedBeanDefinitionReader(this);
@@ -85,6 +93,9 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... componentClasses) {
 		this();
+		/**
+		 * 将给定的componentClasses 类注册到 beanFactory 的 beanDefinitionMap中。
+		 */
 		register(componentClasses);
 		refresh();
 	}

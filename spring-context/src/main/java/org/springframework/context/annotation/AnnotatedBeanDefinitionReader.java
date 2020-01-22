@@ -85,6 +85,9 @@ public class AnnotatedBeanDefinitionReader {
 		Assert.notNull(environment, "Environment must not be null");
 		this.registry = registry;
 		this.conditionEvaluator = new ConditionEvaluator(registry, environment, null);
+		/**
+		 * 注册Processors 到 spring beanDefinitionMap中。
+		 */
 		AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
 	}
 
@@ -215,28 +218,38 @@ public class AnnotatedBeanDefinitionReader {
 			@Nullable Class<? extends Annotation>[] qualifiers, BeanDefinitionCustomizer... definitionCustomizers) {
 
 		/**
-		 * 实例化 BeanDefinition
+		 * 根据指定的bean创建一个AnnotatedGenericBeanDefinition实例
+		 * 这个AnnotatedGenericBeanDefinition可以理解为一个数据结构,包含了类的其他信息,比如一些元信息 scope，lazy等等
 		 */
 		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(beanClass);
+
+		/**
+		 * 判断这个类是否跳过解析,没看懂具体是判断啥？？
+		 */
 		if (this.conditionEvaluator.shouldSkip(abd.getMetadata())) {
 			return;
 		}
 
 		abd.setInstanceSupplier(instanceSupplier);
+
 		/**
-		 * 1.解析 BeanDefinition metadata，获取该类注解的Scope类型(单例或者原型)，及获取代理类型。
-		 * 2.往 BeanDefinition 对象中设置ScopeName.
+		 * 解析 BeanDefinition 的作用域
+		 * 如果有配置 @Scope 则获取用户配置的值
+		 * 如果没有，则默认的作用域为 singleton， proxyMode为 NO
 		 */
 		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
 		abd.setScope(scopeMetadata.getScopeName());
 
 		/**
-		 * 获取beanName.
+		 * 通过类的注解或者类名，生成beanName.
+		 * 如果注解指定名称，则从注解中直接获取
+		 * 如果没有指定名称，则按首字母小写规则作为beanName.
 		 */
 		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));
 
 		/**
-		 * 解析 abd 的metadata注解信息，将解析结果保存到 BeanDefinition 实例中
+		 * 1.解析 abd 的metadata相关注解信息 @Lazy @DependOn @Description @Lazy @Role
+		 * 2.将解析结果保存到 AnnotatedGenericBeanDefinition实例
 		 */
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
 		if (qualifiers != null) {
@@ -257,13 +270,15 @@ public class AnnotatedBeanDefinitionReader {
 		}
 
 		/**
-		 * beanName 与 BeanDefinition 关联，封装成 BeanDefinitionHolder
+		 * BeanDefinitionHolder 也是个数据结构。
+		 * 用来封装 beanName 与 BeanDefinition ，方便进行数据传递
 		 */
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
 
 		/**
-		 * 注册 BeanDefinition
+		 * 把刚刚创建的 AnnotatedGenericBeanDefinition 示例注册给 registry (AnnotatonConfigApplicationContext)
+		 * 也就是放到 beanFactory的 beanDefinitionMap中。
 		 */
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);
 	}

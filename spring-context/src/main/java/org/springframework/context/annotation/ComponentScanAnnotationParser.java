@@ -74,6 +74,16 @@ class ComponentScanAnnotationParser {
 
 
 	public Set<BeanDefinitionHolder> parse(AnnotationAttributes componentScan, final String declaringClass) {
+		/**
+		 * 前面都是scanner初始化过程
+		 * 1. 实例化componentScan.getBoolean("useDefaultFilters")
+		 * 2. 设置 beanNameGenerator
+		 * 3. 设置 scopedProxyMode
+		 * 4. 设置 resourcePattern
+		 * 5. 添加 IncludeFilter 和 ExcludeFilter
+		 * 6. 设置 BeanDefinitionDefaults 的懒加载模式.
+		 *
+		 */
 		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(this.registry,
 				componentScan.getBoolean("useDefaultFilters"), this.environment, this.resourceLoader);
 

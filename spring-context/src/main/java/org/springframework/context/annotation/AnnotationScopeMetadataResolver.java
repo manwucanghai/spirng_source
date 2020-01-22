@@ -74,6 +74,13 @@ public class AnnotationScopeMetadataResolver implements ScopeMetadataResolver {
 	}
 
 
+	/**
+	 * 解析 BeanDefinition 的作用域
+	 * 如果有配置 @Scope 则获取用户配置的值
+	 * 如果没有，则默认的作用域为 singleton， proxyMode为 NO
+	 * @param definition the target bean definition
+	 * @return
+	 */
 	@Override
 	public ScopeMetadata resolveScopeMetadata(BeanDefinition definition) {
 		ScopeMetadata metadata = new ScopeMetadata();
