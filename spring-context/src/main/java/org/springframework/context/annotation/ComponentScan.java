@@ -92,6 +92,8 @@ public @interface ComponentScan {
 	 * that the scanner used to process this {@code @ComponentScan} annotation should
 	 * use its inherited bean name generator, e.g. the default
 	 * {@link AnnotationBeanNameGenerator} or any custom instance supplied to the
+	 *
+	 * 自定义beanName 生成器.
 	 * application context at bootstrap time.
 	 * @see AnnotationConfigApplicationContext#setBeanNameGenerator(BeanNameGenerator)
 	 */

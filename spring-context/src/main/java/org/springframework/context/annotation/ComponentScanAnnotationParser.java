@@ -87,11 +87,21 @@ class ComponentScanAnnotationParser {
 		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(this.registry,
 				componentScan.getBoolean("useDefaultFilters"), this.environment, this.resourceLoader);
 
+		/**
+		 *
+		 * 获取@ComponentScan 配置的nameGenerator的类，
+		 * 如果等于BeanNameGenerator.class 则采用默认的 AnnotationBeanNameGenerator 对象进行名字生成
+		 * 如果不等于，说明是用户自己定义的BeanNameGenerator，则实例化用户自定义的BeanNameGenerator对象。
+		 *
+		 */
 		Class<? extends BeanNameGenerator> generatorClass = componentScan.getClass("nameGenerator");
 		boolean useInheritedGenerator = (BeanNameGenerator.class == generatorClass);
 		scanner.setBeanNameGenerator(useInheritedGenerator ? this.beanNameGenerator :
 				BeanUtils.instantiateClass(generatorClass));
 
+		/**
+		 * 获取用户指定的注解信息,放入scanner中。
+		 */
 		ScopedProxyMode scopedProxyMode = componentScan.getEnum("scopedProxy");
 		if (scopedProxyMode != ScopedProxyMode.DEFAULT) {
 			scanner.setScopedProxyMode(scopedProxyMode);
@@ -139,6 +149,9 @@ class ComponentScanAnnotationParser {
 				return declaringClass.equals(className);
 			}
 		});
+		/**
+		 * 开始进行包扫描
+		 */
 		return scanner.doScan(StringUtils.toStringArray(basePackages));
 	}
 

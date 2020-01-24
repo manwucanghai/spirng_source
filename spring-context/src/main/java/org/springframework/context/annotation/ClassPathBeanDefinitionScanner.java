@@ -290,7 +290,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 				}
 				if (candidate instanceof AnnotatedBeanDefinition) {
 					/**
-					 * 1.解析 abd 的metadata相关注解信息 @Lazy @DependOn @Description @Lazy @Role
+					 * 1.解析 abd 的metadata相关注解信息 @Lazy @DependOn @Description @Role
 					 * 2.将解析结果更新 AnnotatedGenericBeanDefinition实例
 					 */
 					AnnotationConfigUtils.processCommonDefinitionAnnotations((AnnotatedBeanDefinition) candidate);
