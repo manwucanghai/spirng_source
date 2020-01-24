@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Import;
  * @date 2020-01-18 21:02
  */
 @ComponentScan(value = {"com.zws.springinitialize"})
-@Import(value = {NomalClass.class})
+//@Import(value = {NomalClass.class})
 public class SpringInitializeApplication {
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(SpringInitializeApplication.class);

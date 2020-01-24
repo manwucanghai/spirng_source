@@ -190,6 +190,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 	/**
 	 * BeanFactoryPostProcessors to apply on refresh.
+	 * 存放用户自定义，手动添加的 beanFactoryPostProcessor
 	 */
 	private final List<BeanFactoryPostProcessor> beanFactoryPostProcessors = new ArrayList<>();
 
@@ -595,7 +596,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				/**
 				 * 《Spring生命周期中核心方法》
 				 * 1. 执行Spring 内部定义及用户自定义的 ProcessBeanFactory
-				 * 	(用户自定义的指的是用户自己new ProcessBeanFactory子类，通过add 方法进行添加。如果通过@Component注解提供给Spring扫描的，不算在用户自定义中)
+				 * 	    用户自定义的指的是用户自己new ProcessBeanFactory子类，通过add 方法进行添加,
+				 * 	    如果通过@Component注解提供给Spring扫描的，不算在用户自定义中.
 				 * 2. 扫描 componentClasses 配置的 @ComponentScan 的包底下的所有class.
 				 */
 				invokeBeanFactoryPostProcessors(beanFactory);

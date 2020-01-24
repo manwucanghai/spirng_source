@@ -277,7 +277,7 @@ public class AnnotatedBeanDefinitionReader {
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
 
 		/**
-		 * 把刚刚创建的 AnnotatedGenericBeanDefinition 示例注册给 registry (AnnotatonConfigApplicationContext)
+		 * 把刚刚创建的 AnnotatedGenericBeanDefinition 示例注册给 registry (AnnotationConfigApplicationContext)
 		 * 也就是放到 beanFactory的 beanDefinitionMap中。
 		 */
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);

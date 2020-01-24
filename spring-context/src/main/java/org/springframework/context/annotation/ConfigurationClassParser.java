@@ -129,6 +129,9 @@ class ConfigurationClassParser {
 
 	private final ConditionEvaluator conditionEvaluator;
 
+	/**
+	 * 存放被其他类 @Import的类信息
+	 */
 	private final Map<ConfigurationClass, ConfigurationClass> configurationClasses = new LinkedHashMap<>();
 
 	private final Map<String, ConfigurationClass> knownSuperclasses = new HashMap<>();
@@ -217,14 +220,15 @@ class ConfigurationClassParser {
 		}
 
 		/**
-		 * 判断本类是否被其他类@Import (调用processConfigurationClass(configClass) 方法，结束后就会将 configClass放入到 configurationClasses中)
+		 * 判断本类是否被其他类@Import
+		 * (调用processConfigurationClass(configClass) 方法，结束后就会将 configClass放入到 configurationClasses中)
 		 * 如果 existingClass 不为空，则说明该类被其他类进行@Import.
 		 */
 		ConfigurationClass existingClass = this.configurationClasses.get(configClass);
 		if (existingClass != null) {
 			if (configClass.isImported()) {
 				if (existingClass.isImported()) {
-					// 处理被其他类Import
+					// 合并通过@Import 导入该类的所有类。(导入方的所有类)
 					existingClass.mergeImportedBy(configClass);
 				}
 				// Otherwise ignore new imported config class; existing non-imported class overrides it.

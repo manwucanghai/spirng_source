@@ -69,8 +69,7 @@ final class PostProcessorRegistrationDelegate {
 							(BeanDefinitionRegistryPostProcessor) postProcessor;
 					registryProcessor.postProcessBeanDefinitionRegistry(registry);
 					registryProcessors.add(registryProcessor);
-				}
-				else {
+				} else {
 					regularPostProcessors.add(postProcessor);
 				}
 			}
@@ -97,8 +96,18 @@ final class PostProcessorRegistrationDelegate {
 			sortPostProcessors(currentRegistryProcessors, beanFactory);
 			registryProcessors.addAll(currentRegistryProcessors);
 			/**
-			 * 后置处理器方法调用
 			 * 执行所有BeanDefinitionRegistryPostProcessor的 postProcessBeanDefinitionRegistry(registry)方法。
+			 * 1. 先执行Spring 内部及扫描用户定义的 BeanDefinitionRegistryProcessor
+			 * 	  1.1 先执行实现 PriorityOrdered接口的类，执行完清空 currentRegistryProcessors
+			 * 	  1.2 再执行 实现Ordered 接口的类
+			 *
+			 * 2. 最后执行剩下实现BeanDefinitionRegistryPostProcessor接口的类。
+			 *
+			 * 注意：
+			 * 这里面每执行完一个实现 BeanDefinitionRegistryPostProcessor接口的类，都会添加到registryProcessors中，
+			 * 提供后续执行 postProcessBeanFactory回调方法
+			 * 因为 BeanDefinitionRegistryPostProcessor继承了PostProcessBeanFactory.
+			 *
 			 */
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
 			currentRegistryProcessors.clear();
@@ -135,15 +144,21 @@ final class PostProcessorRegistrationDelegate {
 			}
 
 			// Now, invoke the postProcessBeanFactory callback of all processors handled so far.
+			/**
+			 * 执行所有的 PostProcessBeanFactory 回调方法。
+			 */
 			invokeBeanFactoryPostProcessors(registryProcessors, beanFactory);
 			invokeBeanFactoryPostProcessors(regularPostProcessors, beanFactory);
-		}
-
-		else {
+		} else {
 			// Invoke factory processors registered with the context instance.
 			invokeBeanFactoryPostProcessors(beanFactoryPostProcessors, beanFactory);
 		}
 
+
+		/**
+		 * 单独扫描实现 BeanFactoryPostProcessor接口的类，如果前面未执行过，则执行回调方法。
+		 * 顺序依然是按照实现 PriorityOrdered -> Ordered -> 普通类。
+		 */
 		// Do not initialize FactoryBeans here: We need to leave all regular beans
 		// uninitialized to let the bean factory post-processors apply to them!
 		String[] postProcessorNames =
@@ -155,16 +170,16 @@ final class PostProcessorRegistrationDelegate {
 		List<String> orderedPostProcessorNames = new ArrayList<>();
 		List<String> nonOrderedPostProcessorNames = new ArrayList<>();
 		for (String ppName : postProcessorNames) {
+			/**
+			 * 排除前面已经执行过的。
+			 */
 			if (processedBeans.contains(ppName)) {
 				// skip - already processed in first phase above
-			}
-			else if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
+			} else if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
 				priorityOrderedPostProcessors.add(beanFactory.getBean(ppName, BeanFactoryPostProcessor.class));
-			}
-			else if (beanFactory.isTypeMatch(ppName, Ordered.class)) {
+			} else if (beanFactory.isTypeMatch(ppName, Ordered.class)) {
 				orderedPostProcessorNames.add(ppName);
-			}
-			else {
+			} else {
 				nonOrderedPostProcessorNames.add(ppName);
 			}
 		}
@@ -217,11 +232,9 @@ final class PostProcessorRegistrationDelegate {
 				if (pp instanceof MergedBeanDefinitionPostProcessor) {
 					internalPostProcessors.add(pp);
 				}
-			}
-			else if (beanFactory.isTypeMatch(ppName, Ordered.class)) {
+			} else if (beanFactory.isTypeMatch(ppName, Ordered.class)) {
 				orderedPostProcessorNames.add(ppName);
-			}
-			else {
+			} else {
 				nonOrderedPostProcessorNames.add(ppName);
 			}
 		}
