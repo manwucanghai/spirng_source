@@ -270,7 +270,7 @@ public class AnnotatedBeanDefinitionReader {
 		}
 
 		/**
-		 * BeanDefinitionHolder 也是个数据结构。
+		 * BeanDefinitionHolder 是个数据结构。
 		 * 用来封装 beanName 与 BeanDefinition ，方便进行数据传递
 		 */
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);

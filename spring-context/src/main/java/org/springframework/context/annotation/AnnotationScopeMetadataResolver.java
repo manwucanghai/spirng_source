@@ -86,6 +86,14 @@ public class AnnotationScopeMetadataResolver implements ScopeMetadataResolver {
 		ScopeMetadata metadata = new ScopeMetadata();
 		if (definition instanceof AnnotatedBeanDefinition) {
 			AnnotatedBeanDefinition annDef = (AnnotatedBeanDefinition) definition;
+			/**
+			 * 递归解析注解以及注解的父注解(排除Java自身注解) 和 metadata关联的class父类的所有注解及注解的父注解，
+			 * 判断是否有包含 scopeAnnotationType，也就是@Scope的注解
+			 * 如果有，则获取其注解相关内容
+			 *
+			 * 注意： AccessibleObject, Class, Constructor, Executable, Field, Method, Package, Parameter 这些类都实现了 AnnotatedElement 接口
+			 * AnnotatedElement 该接口，是通过方式方式获取注解内容。
+			 */
 			AnnotationAttributes attributes = AnnotationConfigUtils.attributesFor(
 					annDef.getMetadata(), this.scopeAnnotationType);
 			if (attributes != null) {

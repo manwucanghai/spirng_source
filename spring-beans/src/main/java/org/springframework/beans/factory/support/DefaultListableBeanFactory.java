@@ -893,7 +893,14 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		}
 
 		/**
-		 * 从beanDefinitionMap中获取 BeanDefinition
+		 * 根据beanName 从beanDefinitionMap中获取 BeanDefinition
+		 *  1. 如果已经存在
+		 *  	1.1 判断Spring 是否允许 beanDefinition覆盖 ?
+		 * 			a. 如果不允许，则直接报错
+		 * 			b. 如果允许，则判断当前传入的beanDefinition 的角色值与 已经存在的角色值比较，进行相应的提示， 然后替换。
+		 * 	2. 如果不存在
+		 * 		a. 将 beanDefinition 放入到 beanDefinitionMap中
+		 * 		b. 将 beanName 放入到 beanDefinitionNames中
 		 */
 		BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
 		if (existingDefinition != null) {
@@ -925,6 +932,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			this.beanDefinitionMap.put(beanName, beanDefinition);
 		}
 		else {
+			/**
+			 * 如果beanFactory 已经开始实例化bean对象时,不能直接修改原始对象
+			 * 1. 为了安全起见进行同步锁操作
+			 * 2. 更新beanDefinitionNames采用类似CopyOnWriteArrayList方式。
+			 */
 			if (hasBeanCreationStarted()) {
 				// Cannot modify startup-time collection elements anymore (for stable iteration)
 				synchronized (this.beanDefinitionMap) {
@@ -938,6 +950,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 			else {
 				// Still in startup registration phase
+				// 依然处于注册阶段，可直接修改原始map，和list对象。
 				this.beanDefinitionMap.put(beanName, beanDefinition);
 				this.beanDefinitionNames.add(beanName);
 				removeManualSingletonName(beanName);

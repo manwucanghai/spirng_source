@@ -918,6 +918,9 @@ public abstract class AnnotatedElementUtils {
 				if (element instanceof Class) {  // otherwise getAnnotations doesn't return anything new
 					Class<?> superclass = ((Class<?>) element).getSuperclass();
 					if (superclass != null && superclass != Object.class) {
+						/**
+						 * 查找父类的注解
+						 */
 						List<Annotation> inheritedAnnotations = new LinkedList<>();
 						for (Annotation annotation : element.getAnnotations()) {
 							if (!declaredAnnotations.contains(annotation)) {
@@ -972,6 +975,9 @@ public abstract class AnnotatedElementUtils {
 		// Search in annotations
 		for (Annotation annotation : annotations) {
 			Class<? extends Annotation> currentAnnotationType = annotation.annotationType();
+			/**
+			 * 排除Java内部注解 java.lang.annotation 打头的
+			 */
 			if (!AnnotationUtils.isInJavaLangAnnotationPackage(currentAnnotationType)) {
 				if (annotationTypes.contains(currentAnnotationType) ||
 						currentAnnotationType.getName().equals(annotationName) ||
@@ -1004,8 +1010,15 @@ public abstract class AnnotatedElementUtils {
 		for (Annotation annotation : annotations) {
 			Class<? extends Annotation> currentAnnotationType = annotation.annotationType();
 			if (!AnnotationUtils.hasPlainJavaAnnotationsOnly(currentAnnotationType)) {
+				/**
+				 * 递归查找父注解.
+				 */
 				T result = searchWithGetSemantics(currentAnnotationType, annotationTypes,
 						annotationName, containerType, processor, visited, metaDepth + 1);
+
+				/**
+				 * 如果找到了，进行处理完后，直接返回，结束查找操作。
+				 */
 				if (result != null) {
 					processor.postProcess(element, annotation, result);
 					if (processor.aggregates() && metaDepth == 0) {
