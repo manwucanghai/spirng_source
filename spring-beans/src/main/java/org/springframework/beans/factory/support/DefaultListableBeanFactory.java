@@ -933,7 +933,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		}
 		else {
 			/**
-			 * 如果beanFactory 已经开始实例化bean对象时,不能直接修改原始对象
+			 * 如果beanFactory 已经开始实例化bean对象时，不能直接往beanDefinitionNames添加元素，因为ArrayList不是线程安全的。
 			 * 1. 为了安全起见进行同步锁操作
 			 * 2. 更新beanDefinitionNames采用类似CopyOnWriteArrayList方式。
 			 */

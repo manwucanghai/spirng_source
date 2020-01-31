@@ -266,6 +266,9 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 
 		for (String beanName : candidateNames) {
 			BeanDefinition beanDef = registry.getBeanDefinition(beanName);
+			/**
+			 * 如果BeanDefinition已经设置configurationClass属性，及如果开启debug，则尽心打印而已。
+			 */
 			if (ConfigurationClassUtils.isFullConfigurationClass(beanDef) ||
 					ConfigurationClassUtils.isLiteConfigurationClass(beanDef)) {
 				if (logger.isDebugEnabled()) {
@@ -274,7 +277,8 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			}
 
 			/**
-			 * 检查BeanDefinition中存在的类注解信息，并为BeanDefinition设置configurationClass属性。
+			 * 如果BeanDefinition没有设置configurationClass属性，则检查BeanDefinition中存在的类注解信息，
+			 * 并为BeanDefinition设置configurationClass属性。
 			 */
 			else if (ConfigurationClassUtils.checkConfigurationClassCandidate(beanDef, this.metadataReaderFactory)) {
 				configCandidates.add(new BeanDefinitionHolder(beanDef, beanName));

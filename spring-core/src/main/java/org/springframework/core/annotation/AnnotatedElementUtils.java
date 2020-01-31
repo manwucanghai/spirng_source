@@ -362,6 +362,9 @@ public abstract class AnnotatedElementUtils {
 
 		AnnotationAttributes attributes = searchWithGetSemantics(element, null, annotationName,
 				new MergedAnnotationAttributesProcessor(classValuesAsString, nestedAnnotationsAsMap));
+		/**
+		 * 后置处理属性，比如Alias等
+		 */
 		AnnotationUtils.postProcessAnnotationAttributes(element, attributes, classValuesAsString, nestedAnnotationsAsMap);
 		return attributes;
 	}

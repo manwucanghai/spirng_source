@@ -52,6 +52,12 @@ final class PostProcessorRegistrationDelegate {
 	}
 
 
+	/**
+	 * 根据优先级顺序，调用 BeanDefinitionRegistryPostProcessor 及 BeanFactoryPostProcessor 子类的回调方法。
+	 *
+	 * @param beanFactory bean工厂
+	 * @param beanFactoryPostProcessors 用户通过手动add添加的BeanFactoryPostProcessor子类。
+	 */
 	public static void invokeBeanFactoryPostProcessors(
 			ConfigurableListableBeanFactory beanFactory, List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
 
@@ -97,7 +103,8 @@ final class PostProcessorRegistrationDelegate {
 			registryProcessors.addAll(currentRegistryProcessors);
 			/**
 			 * 执行所有BeanDefinitionRegistryPostProcessor的 postProcessBeanDefinitionRegistry(registry)方法。
-			 * 1. 先执行Spring 内部及扫描用户定义的 BeanDefinitionRegistryProcessor
+			 * 1. 先执行用户手动添加的BeanDefinitionRegistryProcessor, (以上for循环已经执行过)
+			 *  再执行Spring 内部及扫描用户定义的 BeanDefinitionRegistryProcessor
 			 * 	  1.1 先执行实现 PriorityOrdered接口的类，执行完清空 currentRegistryProcessors
 			 * 	  1.2 再执行 实现Ordered 接口的类
 			 *
