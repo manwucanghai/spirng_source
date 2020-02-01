@@ -119,6 +119,11 @@ final class PostProcessorRegistrationDelegate {
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
 			currentRegistryProcessors.clear();
 
+			/**
+			 * 为何进行扫描第二次？
+			 * 1. 进行Order类型匹配
+			 * 2. 由于第一次扫描结果，存在配置类进行 @Import, 被Import的类可能实现了BeanDefinitionRegistryPostProcessor接口。
+			 */
 			// Next, invoke the BeanDefinitionRegistryPostProcessors that implement Ordered.
 			postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {

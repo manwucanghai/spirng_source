@@ -134,6 +134,9 @@ class ConfigurationClassBeanDefinitionReader {
 			return;
 		}
 
+		/**
+		 * 如果该configClass 被其他类 import则执行该方法。
+		 */
 		if (configClass.isImported()) {
 			registerBeanDefinitionForImportedConfigurationClass(configClass);
 		}
@@ -359,6 +362,10 @@ class ConfigurationClassBeanDefinitionReader {
 		});
 	}
 
+	/**
+	 * 循环调用ImportBeanDefinitionRegistrar实现类的 registerBeanDefinitions方法。
+	 * @param registrars
+	 */
 	private void loadBeanDefinitionsFromRegistrars(Map<ImportBeanDefinitionRegistrar, AnnotationMetadata> registrars) {
 		registrars.forEach((registrar, metadata) ->
 				registrar.registerBeanDefinitions(metadata, this.registry));

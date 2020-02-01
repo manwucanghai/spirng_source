@@ -295,6 +295,10 @@ class ConfigurationClassParser {
 				 */
 				Set<BeanDefinitionHolder> scannedBeanDefinitions =
 						this.componentScanParser.parse(componentScan, sourceClass.getMetadata().getClassName());
+
+				/**
+				 * 检查扫描出来的所有beanDefinition 判断是否是配置类，如果是的话，按照配置类进行解析处理。
+				 */
 				// Check the set of scanned definitions for any further config classes and parse recursively if needed
 				for (BeanDefinitionHolder holder : scannedBeanDefinitions) {
 					BeanDefinition bdCand = holder.getBeanDefinition().getOriginatingBeanDefinition();
@@ -578,7 +582,7 @@ class ConfigurationClassParser {
 						// Candidate class is an ImportSelector -> delegate to it to determine imports
 						Class<?> candidateClass = candidate.loadClass();
 						/**
-						 * 发射实例化对象。
+						 * 反射实例化对象。
 						 */
 						ImportSelector selector = BeanUtils.instantiateClass(candidateClass, ImportSelector.class);
 						/**
@@ -619,8 +623,8 @@ class ConfigurationClassParser {
 						// Candidate class not an ImportSelector or ImportBeanDefinitionRegistrar ->
 						// process it as an @Configuration class
 						/**
-						 * 1. 如果是普通类，则加入到importStack，作用是？？
-						 * 2. 调用processConfigurationClass 进行处理
+						 * 1. 如果是普通类，则注册到importStack中的imports中，提供后续判断是否已经进行处理过isChainedImportOnStack(configClass)。
+						 * 2. 将该类当做@Configuration注解的类处理，调用processConfigurationClass 进行处理
 						 *    processConfigurationClass里面主要就是把该类放到configurationClasses集合中，提供后续进行解析成bd继而注册
 						 */
 						this.importStack.registerImport(

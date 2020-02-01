@@ -1,5 +1,6 @@
 package com.zws.springinitialize.service;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -9,7 +10,7 @@ import javax.annotation.PostConstruct;
  * @date 2020-01-18 21:05
  */
 @Service
-public class TestService {
+public class TestService implements InitializingBean {
 	public TestService() {
 		System.out.println("TestService constructor..");
 	}
@@ -21,5 +22,10 @@ public class TestService {
 
 	public String query() {
 		return "Test Service Query";
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		System.out.println("afterPropertiesSet...");
 	}
 }

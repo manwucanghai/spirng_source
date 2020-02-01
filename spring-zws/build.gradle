@@ -25,6 +25,7 @@ dependencies {
     compile(project(":spring-context"))
     compile(project(":spring-webmvc"))
     compile(project(":spring-jdbc"))
+//    compile(project(":spring-context-indexer"))
 
     //servlet
     compile("javax.servlet:javax.servlet-api:4.0.1")

@@ -267,7 +267,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		for (String beanName : candidateNames) {
 			BeanDefinition beanDef = registry.getBeanDefinition(beanName);
 			/**
-			 * 如果BeanDefinition已经设置configurationClass属性，及如果开启debug，则尽心打印而已。
+			 * 如果BeanDefinition已经设置configurationClass属性，说明已经处理过，不添加到configCandidates中。打印相关日志
 			 */
 			if (ConfigurationClassUtils.isFullConfigurationClass(beanDef) ||
 					ConfigurationClassUtils.isLiteConfigurationClass(beanDef)) {
@@ -278,7 +278,8 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 
 			/**
 			 * 如果BeanDefinition没有设置configurationClass属性，则检查BeanDefinition中存在的类注解信息，
-			 * 并为BeanDefinition设置configurationClass属性。
+			 * 并为BeanDefinition设置configurationClass属性值
+			 * 封装成BeanDefinitionHolder 添加到 configCandidates中
 			 */
 			else if (ConfigurationClassUtils.checkConfigurationClassCandidate(beanDef, this.metadataReaderFactory)) {
 				configCandidates.add(new BeanDefinitionHolder(beanDef, beanName));
@@ -337,6 +338,10 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			parser.parse(candidates);
 			parser.validate();
 
+			/**
+			 * 1.获取存在@Import其他类的 ConfigurationClass
+			 * 2.loadBeanDefinitions 加载configClasses，回调Import的回调方法.
+			 */
 			Set<ConfigurationClass> configClasses = new LinkedHashSet<>(parser.getConfigurationClasses());
 			configClasses.removeAll(alreadyParsed);
 
