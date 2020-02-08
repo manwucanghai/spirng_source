@@ -16,18 +16,18 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  */
 
 @ComponentScan(value = {"com.zws.spring"})
-@EnableAspectJAutoProxy(proxyTargetClass = true)
+@EnableAspectJAutoProxy()
 public class SpringApplication {
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext();
 		ac.register(SpringApplication.class);
 		ac.refresh();
 
-		aopDeclareParentsAnnotation(ac);
+//		aopDeclareParentsAnnotation(ac);
 
 //		manualBeanRegister(ac);
 
-//		nomalAop(ac);
+		nomalAop(ac);
 
 
 	}
@@ -37,11 +37,11 @@ public class SpringApplication {
 		System.out.println(userAService.getName());
 
 
-		System.out.println("#############################");
-		UserBService userB = ac.getBean(UserBService.class);
-		userB.printMessage("UserB printMessage");
-		userB.printMessageWithAge("UserB printMessageWithAge ", 20);
-		userB.printUserInfo(new UserInfo("zws",29));
+//		System.out.println("#############################");
+//		UserBService userB = ac.getBean(UserBService.class);
+//		userB.printMessage("UserB printMessage");
+//		userB.printMessageWithAge("UserB printMessageWithAge ", 20);
+//		userB.printUserInfo(new UserInfo("zws",29));
 	}
 
 	/**

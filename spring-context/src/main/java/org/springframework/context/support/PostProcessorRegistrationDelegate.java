@@ -88,13 +88,14 @@ final class PostProcessorRegistrationDelegate {
 
 			// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
 			/**
-			 * 获取Spring最开始初始化的 ConfigurationClassPostProcessor
+			 * 实例化 ConfigurationClassPostProcessor 后置处理器
 			 * 这个类能进行插手Spring 工厂的实例化过程。
 			 */
 			String[] postProcessorNames =
 					beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
 				if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
+					//通过 beanFactory.getBean(beanName,requireType) 进行实例化.
 					currentRegistryProcessors.add(beanFactory.getBean(ppName, BeanDefinitionRegistryPostProcessor.class));
 					processedBeans.add(ppName);
 				}
@@ -209,6 +210,7 @@ final class PostProcessorRegistrationDelegate {
 		invokeBeanFactoryPostProcessors(orderedPostProcessors, beanFactory);
 
 		// Finally, invoke all other BeanFactoryPostProcessors.
+		// Spring内置的EventListenerMethodProcessor
 		List<BeanFactoryPostProcessor> nonOrderedPostProcessors = new ArrayList<>();
 		for (String postProcessorName : nonOrderedPostProcessorNames) {
 			nonOrderedPostProcessors.add(beanFactory.getBean(postProcessorName, BeanFactoryPostProcessor.class));
@@ -217,9 +219,21 @@ final class PostProcessorRegistrationDelegate {
 
 		// Clear cached merged bean definitions since the post-processors might have
 		// modified the original metadata, e.g. replacing placeholders in values...
+		/**
+		 * 由于执行后置处理器可能修改 beanDefinition的元数据.
+		 * 清除merged definitions
+		 */
 		beanFactory.clearMetadataCache();
 	}
 
+	/**
+	 * 1.实例化BeanPostProcessorChecker，并添加到beanFactory的beanPostProcessors中
+	 * 2.从beanDefinitionMap中取出所有的BeanPostProcessor子类beanName
+	 * 3.根据bean的优先级进行排序，依次实例化beanPostProcessor后，按顺序添加到beanFactory的beanPostProcessors中，完成注册
+	 * 4.最后实例化ApplicationListenerDetector，也添加到beanFactory的beanPostProcessors中
+	 * @param beanFactory
+	 * @param applicationContext
+	 */
 	public static void registerBeanPostProcessors(
 			ConfigurableListableBeanFactory beanFactory, AbstractApplicationContext applicationContext) {
 

@@ -2,6 +2,7 @@ package com.zws.spring.service;
 
 import com.zws.spring.annotation.ClassField;
 import com.zws.spring.entity.UserInfo;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 

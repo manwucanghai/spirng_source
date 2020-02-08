@@ -266,6 +266,9 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 			catch (IllegalStateException ex) {
 				throw new BeanCreationException(beanName, "Lookup method resolution failed", ex);
 			}
+			/**
+			 * 将已经检查过的class添加到lookupMethodsChecked缓存中
+			 */
 			this.lookupMethodsChecked.add(beanName);
 		}
 
@@ -288,6 +291,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 					List<Constructor<?>> candidates = new ArrayList<>(rawCandidates.length);
 					Constructor<?> requiredConstructor = null;
 					Constructor<?> defaultConstructor = null;
+					//findPrimaryConstructor只针对Kotlin才有值。
 					Constructor<?> primaryConstructor = BeanUtils.findPrimaryConstructor(beanClass);
 					int nonSyntheticConstructors = 0;
 					for (Constructor<?> candidate : rawCandidates) {
@@ -299,6 +303,9 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 						}
 						AnnotationAttributes ann = findAutowiredAnnotation(candidate);
 						if (ann == null) {
+							/**
+							 * 获取用户原来定义Class的类型
+							 */
 							Class<?> userClass = ClassUtils.getUserClass(beanClass);
 							if (userClass != beanClass) {
 								try {
@@ -362,6 +369,9 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 					else {
 						candidateConstructors = new Constructor<?>[0];
 					}
+					/**
+					 * 缓存构造函数信息，提供下次创建实例获取(针对原型模式)
+					 */
 					this.candidateConstructorsCache.put(beanClass, candidateConstructors);
 				}
 			}

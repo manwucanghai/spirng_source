@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * @date 2020-01-17 17:36
  */
 @Aspect
-//@Component
+@Component
 public class AopAdvice {
 
 	@Pointcut(value = "execution( * com.zws.spring.service.*.*(..))")
@@ -28,14 +28,14 @@ public class AopAdvice {
 	}
 
 
-	/**
-	 * 执行方法之前
-	 */
-	@Before(value = "pointcut()")
-	@Order(1) //无效果
-	private void beforeAdvice2(){
-		System.out.println("--------- before2 advice ----------");
-	}
+//	/**
+//	 * 执行方法之前
+//	 */
+//	@Before(value = "pointcut()")
+//	@Order(1) //无效果
+//	private void beforeAdvice2(){
+//		System.out.println("--------- before2 advice ----------");
+//	}
 
 //	/**
 //	 * 执行方法之后，且一定会被执行，相当于 try{} finnaly{...}

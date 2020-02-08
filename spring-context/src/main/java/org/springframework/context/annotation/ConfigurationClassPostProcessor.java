@@ -237,6 +237,10 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	/**
 	 * Prepare the Configuration classes for servicing bean requests at runtime
 	 * by replacing them with CGLIB-enhanced subclasses.
+	 *
+	 * 1.通过beanFactory 的hashCode校验是否调用postProcessBeanFactory 及 postProcessBeanDefinitionRegistry 方法
+	 * 2.为full配置类生成代理类，并设置到beanDefinition
+	 * 3.添加后置处理器 ImportAwareBeanPostProcessor
 	 */
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
@@ -251,7 +255,9 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			// Simply call processConfigurationClasses lazily at this point then.
 			processConfigBeanDefinitions((BeanDefinitionRegistry) beanFactory);
 		}
-
+		/**
+		 * 为full配置类生成代理类，并设置到beanDefinition
+		 */
 		enhanceConfigurationClasses(beanFactory);
 		beanFactory.addBeanPostProcessor(new ImportAwareBeanPostProcessor(beanFactory));
 	}
