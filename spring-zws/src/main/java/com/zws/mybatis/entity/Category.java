@@ -7,7 +7,7 @@ package com.zws.mybatis.entity;
 public class Category {
 	private int id;
 	private String title;
-	private long imageId;
+	private long image_id;
 	private String description;
 
 	public int getId() {
@@ -26,12 +26,12 @@ public class Category {
 		this.title = title;
 	}
 
-	public long getImageId() {
-		return imageId;
+	public long getImage_id() {
+		return image_id;
 	}
 
-	public void setImageId(long imageId) {
-		this.imageId = imageId;
+	public void setImage_id(long image_id) {
+		this.image_id = image_id;
 	}
 
 	public String getDescription() {
@@ -47,7 +47,7 @@ public class Category {
 		return "Category{" +
 				"id=" + id +
 				", title='" + title + '\'' +
-				", imageId=" + imageId +
+				", imageId=" + image_id +
 				", description='" + description + '\'' +
 				'}';
 	}

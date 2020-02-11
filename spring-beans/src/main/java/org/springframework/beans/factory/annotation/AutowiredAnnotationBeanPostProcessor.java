@@ -244,6 +244,9 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 			throws BeanCreationException {
 
 		// Let's check for lookup methods here...
+		/**
+		 * 如果lookupMethodsChecked包含beanName名称，则说明已经检查过了，并添加到了BeanDefinition中了，无需再进行检查。
+		 */
 		if (!this.lookupMethodsChecked.contains(beanName)) {
 			try {
 				ReflectionUtils.doWithMethods(beanClass, method -> {
@@ -301,6 +304,12 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 						else if (primaryConstructor != null) {
 							continue;
 						}
+						/**
+						 * 检查构造函数是否包含以下注解:
+						 * @Autowired
+						 * @Value  (这个其实是没用的，因为无法@Value不支持注解构造函数.)
+						 * @Inject
+						 */
 						AnnotationAttributes ann = findAutowiredAnnotation(candidate);
 						if (ann == null) {
 							/**
@@ -356,9 +365,13 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 						}
 						candidateConstructors = candidates.toArray(new Constructor<?>[0]);
 					}
+					//如果只有一个构造方法，且参数个数大于0，则直接创建构造方法
 					else if (rawCandidates.length == 1 && rawCandidates[0].getParameterCount() > 0) {
 						candidateConstructors = new Constructor<?>[] {rawCandidates[0]};
 					}
+					/**
+					 * 以下这两个判断只针对Kotlin，因为只有Kotlin primaryConstructor才有值.
+					 */
 					else if (nonSyntheticConstructors == 2 && primaryConstructor != null &&
 							defaultConstructor != null && !primaryConstructor.equals(defaultConstructor)) {
 						candidateConstructors = new Constructor<?>[] {primaryConstructor, defaultConstructor};
@@ -367,6 +380,9 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 						candidateConstructors = new Constructor<?>[] {primaryConstructor};
 					}
 					else {
+						/**
+						 * 采用默认构造方法
+						 */
 						candidateConstructors = new Constructor<?>[0];
 					}
 					/**

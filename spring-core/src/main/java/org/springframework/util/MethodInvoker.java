@@ -301,6 +301,12 @@ public class MethodInvoker {
 	 * @param args the arguments to match
 	 * @return the accumulated weight for all arguments
 	 */
+	/**
+	 * 计算类型差异权重
+	 * 1.如果参数类型与参数值类型 不匹配则返回Int最大值
+	 * 2.如果paramType为接口，则result值+1
+	 * 3.如果paramType与父类值相等，则result+2
+	 */
 	public static int getTypeDifferenceWeight(Class<?>[] paramTypes, Object[] args) {
 		int result = 0;
 		for (int i = 0; i < paramTypes.length; i++) {

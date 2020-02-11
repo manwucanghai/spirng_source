@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-@Scope("prototype")
 public class UserBService implements IUserService {
 	public UserBService() {
 		System.out.println("UserB Service constructor running ...");

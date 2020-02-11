@@ -33,8 +33,9 @@ public class SpringApplication {
 	}
 
 	private static void nomalAop(AnnotationConfigApplicationContext ac) {
-		IUserService userAService = (IUserService) ac.getBean("userAService");
+		UserAService userAService = ac.getBean(UserAService.class);
 		System.out.println(userAService.getName());
+		System.out.println(userAService.service);
 
 
 //		System.out.println("#############################");
