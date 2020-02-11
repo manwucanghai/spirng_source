@@ -495,6 +495,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// Prepare method overrides.
+		/**
+		 * 标识Lookup-Method方法是否进行重载(判断规则，该lookup-method是否出现多次[当前类，及所有父类和父接口])。
+		 * 注意，这里只针对XML配置的生效，@Lookup是在后面进行解析。
+		 */
 		try {
 			mbdToUse.prepareMethodOverrides();
 		}
@@ -1194,8 +1198,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		// Candidate constructors for autowiring?
 		/**
-		 * 获取要实例化的构造函数
-		 * 如果获取到的ctors值为null,则采用默认的无参构造方法进行实例化.
+		 * 调用 AutowiredAnnotationBeanPostProcessor 的 determineCandidateConstructors(beanClass, beanName) 方法
+		 * 1.解析@Lookup注解，往mbd的methodOverrides添加override, 默认情况下 override的overloaded属性为true
+		 * 2.获取要实例化的构造函数,如果获取到的ctors值为null,则采用默认的无参构造方法进行实例化.
 		 */
 		Constructor<?>[] ctors = determineConstructorsFromBeanPostProcessors(beanClass, beanName);
 		if (ctors != null || mbd.getResolvedAutowireMode() == AUTOWIRE_CONSTRUCTOR ||

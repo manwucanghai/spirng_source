@@ -39,6 +39,9 @@ public abstract class MethodOverride implements BeanMetadataElement {
 
 	private final String methodName;
 
+	/**
+	 * 标识方法是否进行重载，如果只有出现一次该方法(当前类及所有父类，父接口)，那说明是没有进行重载的
+	 */
 	private boolean overloaded = true;
 
 	@Nullable

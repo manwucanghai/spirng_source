@@ -3,6 +3,7 @@ package com.zws.spring.service;
 import com.zws.spring.annotation.ClassField;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Scope;

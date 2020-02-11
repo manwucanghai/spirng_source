@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * @date 2020-01-12 21:33
  */
 
-@Component
+//@Component
 public class UserBService implements IUserService {
 	public UserBService() {
 		System.out.println("UserB Service constructor running ...");

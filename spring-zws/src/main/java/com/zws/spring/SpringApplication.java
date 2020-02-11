@@ -2,13 +2,11 @@ package com.zws.spring;
 
 import com.zws.spring.entity.TestBean;
 import com.zws.spring.entity.UserInfo;
-import com.zws.spring.service.IUserService;
-import com.zws.spring.service.NotMethodService;
-import com.zws.spring.service.UserAService;
-import com.zws.spring.service.UserBService;
+import com.zws.spring.service.*;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.ImportResource;
 
 /**
  * @author zhengws
@@ -17,6 +15,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @ComponentScan(value = {"com.zws.spring"})
 @EnableAspectJAutoProxy()
+@ImportResource(value = {"classpath:spring.xml"})
 public class SpringApplication {
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext();
@@ -27,15 +26,26 @@ public class SpringApplication {
 
 //		manualBeanRegister(ac);
 
-		nomalAop(ac);
+		normalAop(ac);
 
 
 	}
 
-	private static void nomalAop(AnnotationConfigApplicationContext ac) {
-		UserAService userAService = ac.getBean(UserAService.class);
+	private static void normalAop(AnnotationConfigApplicationContext ac) {
+//		Object bean = ac.getBean("userAService");
+//		Class<?>[] interfaces = bean.getClass().getInterfaces();
+//		for (int i = 0; i < interfaces.length; i++) {
+//			System.out.println(interfaces[i]);
+//
+//		}
+//		System.out.println(bean);
+		IUserService userAService = (IUserService) ac.getBean("userAService");
 		System.out.println(userAService.getName());
-		System.out.println(userAService.service);
+//		System.out.println(userAService.service);
+
+		AService aService = (AService) ac.getBean("aService");
+		aService.printService();
+		aService.printService();
 
 
 //		System.out.println("#############################");
