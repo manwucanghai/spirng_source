@@ -137,6 +137,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 
 	private final Map<Object, Class<?>> proxyTypes = new ConcurrentHashMap<>(16);
 
+	/**
+	 * 标识beanName是否进行创建代理类.
+	 */
 	private final Map<Object, Boolean> advisedBeans = new ConcurrentHashMap<>(256);
 
 
@@ -245,9 +248,21 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		Object cacheKey = getCacheKey(beanClass, beanName);
 
 		if (!StringUtils.hasLength(beanName) || !this.targetSourcedBeans.contains(beanName)) {
+			/**
+			 * 如果advisedBeans包含当前beanName，则说明已经处理过了，直接返回
+			 */
 			if (this.advisedBeans.containsKey(cacheKey)) {
 				return null;
 			}
+			/**
+			 * 判断当前beanClass是否是切面？
+			 * 判断规则如下：
+			 * 	1. 判断beanClass是否实现了 Advice.class、Pointcut.class、Advisor.class、AopInfrastructureBean.class其中一个
+			 * 	2. 判断beanClass是否拥有@Aspect 注解
+			 * 如果两者其中一个满足，则说明该类为切面。
+			 * 如果为切面，则标识为false，代表无需进行代理类创建。并返回null。
+			 *
+			 */
 			if (isInfrastructureClass(beanClass) || shouldSkip(beanClass, beanName)) {
 				this.advisedBeans.put(cacheKey, Boolean.FALSE);
 				return null;

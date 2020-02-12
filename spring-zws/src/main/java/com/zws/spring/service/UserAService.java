@@ -9,6 +9,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.beans.ConstructorProperties;
 
@@ -22,14 +23,14 @@ import java.beans.ConstructorProperties;
 @ClassField
 public class UserAService implements IUserService, InitializingBean {
 
-	public IUserService service;
+	public UserBService userBService;
 
 //	@ConstructorProperties(value = {"userBService"})
 	// 可采用@Autowired或者@Inject选择特定的构造方法进行注入，多个构造方法只能添加一个@Autowired注解.
 	@Autowired
 //	@Inject
-	public UserAService(IUserService service){
-		this.service = service;
+	public UserAService(UserBService userBService){
+		this.userBService = userBService;
 	}
 
 //	@Autowired
@@ -55,6 +56,16 @@ public class UserAService implements IUserService, InitializingBean {
 
 	protected void printInfos(){
 		System.out.println(this.name + " for UserA");
+	}
+
+	@PostConstruct
+	public void initMethod1(){
+		System.out.println("init method1 ....");
+	}
+
+	@PostConstruct
+	public void initMethod2(){
+		System.out.println("init method2 ....");
 	}
 
 	@Override

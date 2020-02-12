@@ -14,7 +14,7 @@ import org.springframework.context.annotation.ImportResource;
  */
 
 @ComponentScan(value = {"com.zws.spring"})
-@EnableAspectJAutoProxy()
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 @ImportResource(value = {"classpath:spring.xml"})
 public class SpringApplication {
 	public static void main(String[] args) {

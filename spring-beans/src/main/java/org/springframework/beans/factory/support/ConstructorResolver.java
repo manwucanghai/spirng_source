@@ -109,6 +109,13 @@ class ConstructorResolver {
      * bean factory is able to host components that expect constructor-based
      * dependency resolution.
      *
+     * 采用带参构造函数创建对象的前提
+     * 1.有构造方法
+     * 2.构造方法参数类型
+     * 3.构造方法参数值
+     *
+     *
+     *
      * @param beanName     the name of the bean
      * @param mbd          the merged bean definition for the bean
      * @param chosenCtors  chosen candidate constructors (or {@code null} if none)
@@ -149,6 +156,12 @@ class ConstructorResolver {
             // Take specified constructors, if any.
             Constructor<?>[] candidates = chosenCtors;
             if (candidates == null) {
+                /**
+                 * 如果传入的构造函数为null,则获取该class的所有构造函数
+                 * 这种情况，可能出现在注入类型为 AUTOWIRE_CONSTRUCTOR
+                 *      修改beanDefinition的注入模式，可通过实现BeanFactoryPostProcessor接口，单独修改特定的beanDefinition。
+                 *      beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR);
+                 */
                 Class<?> beanClass = mbd.getBeanClass();
                 try {
                     candidates = (mbd.isNonPublicAccessAllowed() ?
@@ -183,6 +196,10 @@ class ConstructorResolver {
             ConstructorArgumentValues resolvedValues = null;
 
             int minNrOfArgs;
+            /**
+             * Spring内部进行创建bean,是调用getBean(beanName)进行创建的，
+             * 因此explicitArgs永远为null,除非用户手动掉用genBean的其他带参方法
+             */
             if (explicitArgs != null) {
                 minNrOfArgs = explicitArgs.length;
             } else {
@@ -236,11 +253,15 @@ class ConstructorResolver {
                             ParameterNameDiscoverer pnd = this.beanFactory.getParameterNameDiscoverer();
                             if (pnd != null) {
                                 /**
+                                 * 获取构造方法，参数名称. 例如 public UserAService(UserBService userBService){} 获取到的值为userBService。
                                  * 采用ASM技术获取所有method及参数 map，在根据构造方法获取其传入参数.
                                  */
                                 paramNames = pnd.getParameterNames(candidate);
                             }
                         }
+                        /**
+                         * 创建构造函数参数数组实例，以便 Constructor.newInstance(args...)用.
+                         */
                         argsHolder = createArgumentArray(beanName, mbd, resolvedValues, bw, paramTypes, paramNames,
                                 getUserDeclaredConstructor(candidate), autowiring, candidates.length == 1);
                     } catch (UnsatisfiedDependencyException ex) {
@@ -785,6 +806,9 @@ class ConstructorResolver {
         }
 
         for (String autowiredBeanName : autowiredBeanNames) {
+            /**
+             * 记录依赖关系
+             */
             this.beanFactory.registerDependentBean(autowiredBeanName, beanName);
             if (logger.isDebugEnabled()) {
                 logger.debug("Autowiring by type from bean name '" + beanName +

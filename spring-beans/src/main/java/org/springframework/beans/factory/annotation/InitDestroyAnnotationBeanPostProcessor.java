@@ -122,7 +122,14 @@ public class InitDestroyAnnotationBeanPostProcessor
 		return this.order;
 	}
 
-
+	/**
+	 * 查找生命周期元数据
+	 * 查找是否有方法添加 @PostConstruct 或者 @PreDestroy注解
+	 * 有的话，添加到LifecycleMetadata的initMethods 及 destroyMethod中
+	 * @param beanDefinition the merged bean definition for the bean
+	 * @param beanType the actual type of the managed bean instance
+	 * @param beanName the name of the bean
+	 */
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
 		LifecycleMetadata metadata = findLifecycleMetadata(beanType);

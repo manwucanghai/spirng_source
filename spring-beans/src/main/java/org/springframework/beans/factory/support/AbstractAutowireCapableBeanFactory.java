@@ -510,7 +510,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		try {
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
 			/**
-			 * 通过给定的BeanPostProcessors 来改变bean实例对象，返回代理对象.
+			 * 通过给定的InstantiationAwareBeanPostProcessor 来改变bean实例对象，返回代理对象.
+			 * 默认AOP的AnnotationAwareAspectJAutoProxyCreator，
+			 * 仅仅只是标识该beanClass是否需要进行代理处理，然后直接返回null,具体的代理处理逻辑在后面。
 			 */
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
@@ -563,6 +565,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			instanceWrapper = this.factoryBeanInstanceCache.remove(beanName);
 		}
 		if (instanceWrapper == null) {
+			/**
+			 * 创建bean实例.
+			 */
 			instanceWrapper = createBeanInstance(beanName, mbd, args);
 		}
 		final Object bean = instanceWrapper.getWrappedInstance();
@@ -1128,6 +1133,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @param beanName the name of the bean
 	 * @return the bean object to use instead of a default instance of the target bean, or {@code null}
 	 * @see InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation
+	 *
+	 * AnnotationAwareAspectJAutoProxyCreator 如果开启@EnableAspectJAutoProxy的话，会调用该类的postProcessBeforeInstantiation方法
+	 * 进行判断该beanClass是否是切面，如果是切面，则将beanClass缓存标识为false,代表不进行创建代理类。
 	 */
 	@Nullable
 	protected Object applyBeanPostProcessorsBeforeInstantiation(Class<?> beanClass, String beanName) {
@@ -1200,7 +1208,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		/**
 		 * 调用 AutowiredAnnotationBeanPostProcessor 的 determineCandidateConstructors(beanClass, beanName) 方法
 		 * 1.解析@Lookup注解，往mbd的methodOverrides添加override, 默认情况下 override的overloaded属性为true
-		 * 2.获取要实例化的构造函数,如果获取到的ctors值为null,则采用默认的无参构造方法进行实例化.
+		 * 2.获取要实例化的构造函数
+		 * 	 a.解析构造函数是否拥有@Autowired及@Inject注解，如果有的话，则返回该构造方法,然后采用autowireConstructor方式进行创建实例
+		 * 	 b.如果获取到的ctors值为null,则采用默认的无参构造方法进行实例化.
 		 */
 		Constructor<?>[] ctors = determineConstructorsFromBeanPostProcessors(beanClass, beanName);
 		if (ctors != null || mbd.getResolvedAutowireMode() == AUTOWIRE_CONSTRUCTOR ||

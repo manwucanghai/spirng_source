@@ -60,6 +60,15 @@ public class PrioritizedParameterNameDiscoverer implements ParameterNameDiscover
 		return null;
 	}
 
+	/**
+	 * 获取构造函数参数的方式有两种：
+	 * 1. StandardReflectionParameterNameDiscoverer 通过构造函数直接获取其参数名称，获取到的仅仅是 args0, args1...此方式无效,
+	 *  (疑问：如何通过构造函数就能获取到其参数的名称?)
+	 * 2. LocalVariableTableParameterNameDiscoverer 通过读取字节码，解析方法的所有参数，再获取构造方法的参数值.
+	 *
+	 * @param ctor
+	 * @return
+	 */
 	@Override
 	@Nullable
 	public String[] getParameterNames(Constructor<?> ctor) {
