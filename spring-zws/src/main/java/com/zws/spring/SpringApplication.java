@@ -15,7 +15,7 @@ import org.springframework.context.annotation.ImportResource;
 
 @ComponentScan(value = {"com.zws.spring"})
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@ImportResource(value = {"classpath:spring.xml"})
+//@ImportResource(value = {"classpath:spring.xml"})
 public class SpringApplication {
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext();
@@ -39,13 +39,24 @@ public class SpringApplication {
 //
 //		}
 //		System.out.println(bean);
-		IUserService userAService = (IUserService) ac.getBean("userAService");
-		System.out.println(userAService.getName());
+		UserAService userAService = ac.getBean(UserAService.class);
+		userAService.userBService.setName("userAService depends");
+		UserBService userBService = ac.getBean(UserBService.class);
+		System.out.println(userAService.userBService.getName());
+		System.out.println(userBService.getName());
+		System.out.println(userAService.userBService.hashCode());
+		System.out.println(userBService.hashCode());
+
+		userBService.setName("UserB");
+		System.out.println(userAService.userBService.getName());
+		System.out.println(userBService.getName());
+//		IUserService userAService = (IUserService) ac.getBean("userAService");
+//		System.out.println(userAService.getName());
 //		System.out.println(userAService.service);
 
-		AService aService = (AService) ac.getBean("aService");
-		aService.printService();
-		aService.printService();
+//		AService aService = (AService) ac.getBean("aService");
+//		aService.printService();
+//		aService.printService();
 
 
 //		System.out.println("#############################");

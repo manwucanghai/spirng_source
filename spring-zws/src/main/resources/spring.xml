@@ -3,10 +3,10 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="aService" class="com.zws.spring.service.AService">
-		<lookup-method name="getService" bean="userBService"></lookup-method>
-	</bean>
-	<bean id="userBService" class="com.zws.spring.service.UserBService">
+<!--	<bean id="aService" class="com.zws.spring.service.AService">-->
+<!--		<lookup-method name="getService" bean="userBService"></lookup-method>-->
+<!--	</bean>-->
+<!--	<bean id="userBService" class="com.zws.spring.service.UserBService">-->
 
-	</bean>
+<!--	</bean>-->
 </beans>

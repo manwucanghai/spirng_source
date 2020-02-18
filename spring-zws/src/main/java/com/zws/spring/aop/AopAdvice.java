@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * @date 2020-01-17 17:36
  */
 @Aspect
-@Component
+//@Component
 public class AopAdvice {
 
 	@Pointcut(value = "execution( * com.zws.spring.service.*.*(..))")

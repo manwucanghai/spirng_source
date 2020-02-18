@@ -3,15 +3,10 @@ package com.zws.spring.service;
 import com.zws.spring.annotation.ClassField;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Lookup;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import java.beans.ConstructorProperties;
 
 /**
  * @author zhengws
@@ -22,21 +17,29 @@ import java.beans.ConstructorProperties;
 //@DependsOn(value = {"userBService"})
 @ClassField
 public class UserAService implements IUserService, InitializingBean {
-
+	@Autowired
+	/**
+	 * 加了@Lazy注解后，获取到的userBService 与容器中的userBService其实不是同一个实例，而是代理类实例.
+	 * org.springframework.beans.factory.support.AutowireCandidateResolver#getLazyResolutionProxyIfNecessary()
+	 */
+//	@Lazy
 	public UserBService userBService;
+
+	@Autowired
+	public AService aService;
 
 //	@ConstructorProperties(value = {"userBService"})
 	// 可采用@Autowired或者@Inject选择特定的构造方法进行注入，多个构造方法只能添加一个@Autowired注解.
-	@Autowired
-//	@Inject
-	public UserAService(UserBService userBService){
-		this.userBService = userBService;
-	}
+//	@Autowired
+////	@Inject
+//	public UserAService(UserBService userBService){
+//		this.userBService = userBService;
+//	}
 
 //	@Autowired
-	public UserAService(UserBService userBService, AService aService){
-		System.out.println("ccccccc");
-	}
+//	public UserAService(UserBService userBService, AService aService){
+//		System.out.println("ccccccc");
+//	}
 	private String name = "UserA";
 
 //	public UserAService() {

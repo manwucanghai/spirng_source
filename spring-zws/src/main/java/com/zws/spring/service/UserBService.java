@@ -1,9 +1,7 @@
 package com.zws.spring.service;
 
-import com.zws.spring.annotation.ClassField;
 import com.zws.spring.entity.UserInfo;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,32 +9,42 @@ import org.springframework.stereotype.Component;
  * @date 2020-01-12 21:33
  */
 
-//@Component
+@Component
 public class UserBService implements IUserService {
-	public UserBService() {
-		System.out.println("UserB Service constructor running ...");
-	}
 
-	@Override
-	public String getName() {
-		return "B Name";
-	}
+    private String name;
 
-	@Override
-	public String getValue() {
-		return "B Value";
-	}
+    @Autowired
+    public UserAService userAService;
 
-	public void printMessage(String msg) {
-		System.out.println(msg);
-	}
+    public UserBService() {
+        System.out.println("UserB Service constructor running ...");
+    }
 
-	public void printMessageWithAge(String msg, Integer age) {
-		System.out.println(msg + age);
-	}
+    @Override
+    public String getName() {
+        return name;
+    }
 
-	public void printUserInfo(UserInfo info){
-		System.out.println(info.name + info.age);
-		throw new NullPointerException();
-	}
+    public void setName(String name){
+        this.name = name;
+    }
+
+    @Override
+    public String getValue() {
+        return "B Value";
+    }
+
+    public void printMessage(String msg) {
+        System.out.println(msg);
+    }
+
+    public void printMessageWithAge(String msg, Integer age) {
+        System.out.println(msg + age);
+    }
+
+    public void printUserInfo(UserInfo info) {
+        System.out.println(info.name + info.age);
+        throw new NullPointerException();
+    }
 }

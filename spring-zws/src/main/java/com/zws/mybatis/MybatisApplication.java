@@ -17,11 +17,13 @@ public class MybatisApplication {
 		ac.register(AppConfig.class);
 		ac.refresh();
 
-		CategoryMapper categoryMapper = ac.getBean(CategoryMapper.class);
-		System.out.println(categoryMapper.query());
-		Set<Integer> s = new HashSet<>();
-		s.add(4);
-		s.add(9);
-		System.out.println(categoryMapper.queryWithImageId(s));
+		Object mapper = ac.getBean("categoryMapper");
+		System.out.println(mapper);
+//		CategoryMapper categoryMapper = ac.getBean(CategoryMapper.class);
+//		System.out.println(categoryMapper.query());
+//		Set<Integer> s = new HashSet<>();
+//		s.add(4);
+//		s.add(9);
+//		System.out.println(categoryMapper.queryWithImageId(s));
 	}
 }

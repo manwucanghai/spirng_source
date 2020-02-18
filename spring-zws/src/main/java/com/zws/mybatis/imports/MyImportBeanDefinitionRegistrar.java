@@ -16,7 +16,7 @@ public class MyImportBeanDefinitionRegistrar implements ImportBeanDefinitionRegi
 	public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
 //		BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(CategoryMapper.class);
 //		GenericBeanDefinition beanDefinition = (GenericBeanDefinition) builder.getBeanDefinition();
-
+		System.out.println("#############");
 		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
 		/**
 		 * 由于BeanClass的类型为MyFactoryBean.class 而不是具体实际类的类型，那如何获取代理对象？
