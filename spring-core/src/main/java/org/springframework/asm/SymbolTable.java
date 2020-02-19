@@ -74,6 +74,8 @@ final class SymbolTable {
      * the array index given by its hash code modulo the array size. If several entries must be stored
      * at the same array index, they are linked together via their {@link Entry#next} field. The
      * factory methods of this class make sure that this table does not contain duplicated entries.
+     *
+     * 该结构为链表加数组结构。
      */
     private Entry[] entries;
 
@@ -408,6 +410,9 @@ final class SymbolTable {
      * @return the given entry
      */
     private Entry put(final Entry entry) {
+        /**
+         * 如果大于当前entries数组的75%长度，则进行自动扩容
+         */
         if (entryCount > (entries.length * 3) / 4) {
             int currentCapacity = entries.length;
             int newCapacity = currentCapacity * 2 + 1;
@@ -512,6 +517,11 @@ final class SymbolTable {
      *
      * @param value the internal name of a class.
      * @return a new or already existing Symbol with the given value.
+     *
+     * CONSTANT_Class_info{
+     *     u1 tag,
+     *     u2 index ---> 对应 CONSTANT_UTF8_info的索引值。
+     * }
      */
     Symbol addConstantClass(final String value) {
         return addConstantUtf8Reference(Symbol.CONSTANT_CLASS_TAG, value);
@@ -540,8 +550,7 @@ final class SymbolTable {
      * @param isInterface whether owner is an interface or not.
      * @return a new or already existing Symbol with the given value.
      */
-    Symbol addConstantMethodref(
-            final String owner, final String name, final String descriptor, final boolean isInterface) {
+    Symbol addConstantMethodref(final String owner, final String name, final String descriptor, final boolean isInterface) {
         int tag = isInterface ? Symbol.CONSTANT_INTERFACE_METHODREF_TAG : Symbol.CONSTANT_METHODREF_TAG;
         return addConstantMemberReference(tag, owner, name, descriptor);
     }
@@ -558,8 +567,8 @@ final class SymbolTable {
      * @param descriptor a field or method descriptor.
      * @return a new or already existing Symbol with the given value.
      */
-    private Entry addConstantMemberReference(
-            final int tag, final String owner, final String name, final String descriptor) {
+    private Entry addConstantMemberReference(final int tag, final String owner, final String name,
+                                             final String descriptor) {
         int hashCode = hash(tag, owner, name, descriptor);
         Entry entry = get(hashCode);
         while (entry != null) {
@@ -588,12 +597,8 @@ final class SymbolTable {
      * @param name       a field or method name.
      * @param descriptor a field or method descriptor.
      */
-    private void addConstantMemberReference(
-            final int index,
-            final int tag,
-            final String owner,
-            final String name,
-            final String descriptor) {
+    private void addConstantMemberReference(final int index, final int tag, final String owner,
+                                            final String name, final String descriptor) {
         add(new Entry(index, tag, owner, name, descriptor, 0, hash(tag, owner, name, descriptor)));
     }
 
@@ -803,12 +808,8 @@ final class SymbolTable {
      * @param isInterface   whether owner is an interface or not.
      * @return a new or already existing Symbol with the given value.
      */
-    Symbol addConstantMethodHandle(
-            final int referenceKind,
-            final String owner,
-            final String name,
-            final String descriptor,
-            final boolean isInterface) {
+    Symbol addConstantMethodHandle(final int referenceKind, final String owner, final String name,
+                                   final String descriptor, final boolean isInterface) {
         final int tag = Symbol.CONSTANT_METHOD_HANDLE_TAG;
         // Note that we don't need to include isInterface in the hash computation, because it is
         // redundant with owner (we can't have the same owner with different isInterface values).
@@ -847,12 +848,8 @@ final class SymbolTable {
      * @param name          a field or method name.
      * @param descriptor    a field or method descriptor.
      */
-    private void addConstantMethodHandle(
-            final int index,
-            final int referenceKind,
-            final String owner,
-            final String name,
-            final String descriptor) {
+    private void addConstantMethodHandle(final int index, final int referenceKind, final String owner,
+                                         final String name, final String descriptor) {
         final int tag = Symbol.CONSTANT_METHOD_HANDLE_TAG;
         int hashCode = hash(tag, owner, name, descriptor, referenceKind);
         add(new Entry(index, tag, owner, name, descriptor, referenceKind, hashCode));
@@ -880,11 +877,8 @@ final class SymbolTable {
      * @param bootstrapMethodArguments the bootstrap method arguments.
      * @return a new or already existing Symbol with the given value.
      */
-    Symbol addConstantDynamic(
-            final String name,
-            final String descriptor,
-            final Handle bootstrapMethodHandle,
-            final Object... bootstrapMethodArguments) {
+    Symbol addConstantDynamic(final String name, final String descriptor, final Handle bootstrapMethodHandle,
+                              final Object... bootstrapMethodArguments) {
         Symbol bootstrapMethod = addBootstrapMethod(bootstrapMethodHandle, bootstrapMethodArguments);
         return addConstantDynamicOrInvokeDynamicReference(
                 Symbol.CONSTANT_DYNAMIC_TAG, name, descriptor, bootstrapMethod.index);
@@ -901,11 +895,8 @@ final class SymbolTable {
      * @param bootstrapMethodArguments the bootstrap method arguments.
      * @return a new or already existing Symbol with the given value.
      */
-    Symbol addConstantInvokeDynamic(
-            final String name,
-            final String descriptor,
-            final Handle bootstrapMethodHandle,
-            final Object... bootstrapMethodArguments) {
+    Symbol addConstantInvokeDynamic(final String name, final String descriptor, final Handle bootstrapMethodHandle,
+                                    final Object... bootstrapMethodArguments) {
         Symbol bootstrapMethod = addBootstrapMethod(bootstrapMethodHandle, bootstrapMethodArguments);
         return addConstantDynamicOrInvokeDynamicReference(
                 Symbol.CONSTANT_INVOKE_DYNAMIC_TAG, name, descriptor, bootstrapMethod.index);
@@ -955,12 +946,8 @@ final class SymbolTable {
      *                             CONSTANT_INVOKE_DYNAMIC_TAG.
      * @param bootstrapMethodIndex the index of a bootstrap method in the BootstrapMethods attribute.
      */
-    private void addConstantDynamicOrInvokeDynamicReference(
-            final int tag,
-            final int index,
-            final String name,
-            final String descriptor,
-            final int bootstrapMethodIndex) {
+    private void addConstantDynamicOrInvokeDynamicReference(final int tag, final int index, final String name,
+                                                            final String descriptor, final int bootstrapMethodIndex) {
         int hashCode = hash(tag, name, descriptor, bootstrapMethodIndex);
         add(new Entry(index, tag, null, name, descriptor, bootstrapMethodIndex, hashCode));
     }
@@ -1288,14 +1275,8 @@ final class SymbolTable {
          */
         Entry next;
 
-        Entry(
-                final int index,
-                final int tag,
-                final String owner,
-                final String name,
-                final String value,
-                final long data,
-                final int hashCode) {
+        Entry(final int index, final int tag, final String owner, final String name,
+              final String value, final long data, final int hashCode) {
             super(index, tag, owner, name, value, data);
             this.hashCode = hashCode;
         }

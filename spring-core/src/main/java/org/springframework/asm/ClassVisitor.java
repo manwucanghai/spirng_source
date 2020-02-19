@@ -91,13 +91,8 @@ public abstract class ClassVisitor {
      * @param interfaces the internal names of the class's interfaces (see {@link
      *                   Type#getInternalName()}). May be {@literal null}.
      */
-    public void visit(
-            final int version,
-            final int access,
-            final String name,
-            final String signature,
-            final String superName,
-            final String[] interfaces) {
+    public void visit(final int version, final int access, final String name, final String signature,
+            final String superName, final String[] interfaces) {
         if (cv != null) {
             cv.visit(version, access, name, signature, superName, interfaces);
         }

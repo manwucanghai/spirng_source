@@ -409,10 +409,7 @@ public class ClassReader {
      * @param parsingOptions      the options to use to parse this class. One or more of {@link
      *                            #SKIP_CODE}, {@link #SKIP_DEBUG}, {@link #SKIP_FRAMES} or {@link #EXPAND_FRAMES}.
      */
-    public void accept(
-            final ClassVisitor classVisitor,
-            final Attribute[] attributePrototypes,
-            final int parsingOptions) {
+    public void accept(final ClassVisitor classVisitor, final Attribute[] attributePrototypes, final int parsingOptions) {
         Context context = new Context();
         context.attributePrototypes = attributePrototypes;
         context.parsingOptions = parsingOptions;
@@ -463,10 +460,23 @@ public class ClassReader {
         int nestMembersOffset = 0;
         // - The non standard attributes (linked with their {@link Attribute#nextAttribute} field).
         //   This list in the <i>reverse order</i> or their order in the ClassFile structure.
+        /**
+         * 属性值链表
+         */
         Attribute attributes = null;
 
+        /**
+         * 计算fields, methods,及attribute_count 字节数，并添加到偏移量中，计算出attribute的其实偏移量值。
+         */
         int currentAttributeOffset = getFirstAttributeOffset();
         for (int i = readUnsignedShort(currentAttributeOffset - 2); i > 0; --i) {
+            /**
+             * attribute_info{
+             *     u2 attribute_name,
+             *     u4 attribute_length
+             *     u1 info[length]
+             * }
+             */
             // Read the attribute_info's attribute_name and attribute_length fields.
             String attributeName = readUTF8(currentAttributeOffset, charBuffer);
             int attributeLength = readInt(currentAttributeOffset + 2);
@@ -529,8 +539,7 @@ public class ClassReader {
                 readInt(cpInfoOffsets[1] - 7), accessFlags, thisClass, signature, superClass, interfaces);
 
         // Visit the SourceFile and SourceDebugExtenstion attributes.
-        if ((parsingOptions & SKIP_DEBUG) == 0
-                && (sourceFile != null || sourceDebugExtension != null)) {
+        if ((parsingOptions & SKIP_DEBUG) == 0 && (sourceFile != null || sourceDebugExtension != null)) {
             classVisitor.visitSource(sourceFile, sourceDebugExtension);
         }
 
@@ -825,10 +834,18 @@ public class ClassReader {
      * @param fieldInfoOffset the start offset of the field_info structure.
      * @return the offset of the first byte following the field_info structure.
      */
-    private int readField(
-            final ClassVisitor classVisitor, final Context context, final int fieldInfoOffset) {
+    private int readField( final ClassVisitor classVisitor, final Context context, final int fieldInfoOffset) {
         char[] charBuffer = context.charBuffer;
 
+        /**
+         * field_info{
+         *     u2 access_flags,
+         *     u2 name_index,
+         *     u2 descriptor_index,
+         *     u2 attributes_count,
+         *     n attribute_info
+         * }
+         */
         // Read the access_flags, name_index and descriptor_index fields.
         int currentOffset = fieldInfoOffset;
         int accessFlags = readUnsignedShort(currentOffset);
@@ -857,6 +874,13 @@ public class ClassReader {
         int attributesCount = readUnsignedShort(currentOffset);
         currentOffset += 2;
         while (attributesCount-- > 0) {
+            /**
+             * attribute_info{
+             *     u2 attribute_name_index,
+             *     u4 attribute_length,
+             *     u1 info[attribute_length]
+             * }
+             */
             // Read the attribute_info's attribute_name and attribute_length fields.
             String attributeName = readUTF8(currentOffset, charBuffer);
             int attributeLength = readInt(currentOffset + 2);
@@ -1013,6 +1037,15 @@ public class ClassReader {
             final ClassVisitor classVisitor, final Context context, final int methodInfoOffset) {
         char[] charBuffer = context.charBuffer;
 
+        /**
+         * method_info {
+         *     u2 access_flags,
+         *     u2 name_index,
+         *     u2 descriptor_index,
+         *     u2 attributes_count,
+         *     n attribute_info
+         * }
+         */
         // Read the access_flags, name_index and descriptor_index fields.
         int currentOffset = methodInfoOffset;
         context.currentMethodAccessFlags = readUnsignedShort(currentOffset);
@@ -1055,6 +1088,13 @@ public class ClassReader {
         int attributesCount = readUnsignedShort(currentOffset);
         currentOffset += 2;
         while (attributesCount-- > 0) {
+            /**
+             * attribute_info {
+             *     u2 attribute_name_index,
+             *     u4 attribute_length,
+             *     u1 info[attribute_length]
+             * }
+             */
             // Read the attribute_info's attribute_name and attribute_length fields.
             String attributeName = readUTF8(currentOffset, charBuffer);
             int attributeLength = readInt(currentOffset + 2);
@@ -1295,6 +1335,22 @@ public class ClassReader {
      * @param context       information about the class being parsed.
      * @param codeOffset    the start offset in {@link #b} of the Code attribute, excluding its
      *                      attribute_name_index and attribute_length fields.
+     * Code_attribute {
+     *     u2 attribute_name_index;
+     *     u4 attribute_length;
+     *     u2 max_stack;
+     *     u2 max_locals;
+     *     u4 code_length;
+     *     u1 code[code_length];
+     *     u2 exception_table_length;
+     *     {   u2 start_pc;
+     *         u2 end_pc;
+     *         u2 handler_pc;
+     *         u2 catch_type;
+     *     } exception_table[exception_table_length];
+     *     u2 attributes_count;
+     *     attribute_info attributes[attributes_count];
+     * }
      */
     private void readCode(
             final MethodVisitor methodVisitor, final Context context, final int codeOffset) {
@@ -1652,6 +1708,19 @@ public class ClassReader {
             int attributeLength = readInt(currentOffset + 2);
             currentOffset += 6;
             if (Constants.LOCAL_VARIABLE_TABLE.equals(attributeName)) {
+                /**
+                 * LocalVariableTable_attribute {
+                 *     u2 attribute_name_index; //已经计算过，公共的部分
+                 *     u4 attribute_length; //已经计算过，公共的部分
+                 *     u2 local_variable_table_length;
+                 *     {   u2 start_pc;
+                 *         u2 length;
+                 *         u2 name_index;
+                 *         u2 descriptor_index;
+                 *         u2 index;
+                 *     } local_variable_table[local_variable_table_length];
+                 * }
+                 */
                 if ((context.parsingOptions & SKIP_DEBUG) == 0) {
                     localVariableTableOffset = currentOffset;
                     // Parse the attribute to find the corresponding (debug only) labels.
@@ -1672,6 +1741,16 @@ public class ClassReader {
                 // Here we do not extract the labels corresponding to the attribute content. We assume they
                 // are the same or a subset of those of the LocalVariableTable attribute.
             } else if (Constants.LINE_NUMBER_TABLE.equals(attributeName)) {
+                /**
+                 * LineNumberTable_attribute {
+                 *     u2 attribute_name_index; //已经计算过，公共的部分
+                 *     u4 attribute_length; //已经计算过，公共的部分
+                 *     u2 line_number_table_length;
+                 *     {   u2 start_pc;
+                 *         u2 line_number;
+                 *     } line_number_table[line_number_table_length];
+                 * }
+                 */
                 if ((context.parsingOptions & SKIP_DEBUG) == 0) {
                     // Parse the attribute to find the corresponding (debug only) labels.
                     int currentLineNumberTableOffset = currentOffset;
@@ -1686,6 +1765,14 @@ public class ClassReader {
                     }
                 }
             } else if (Constants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS.equals(attributeName)) {
+                /**
+                 * RuntimeVisibleTypeAnnotations_attribute {
+                 *     u2              attribute_name_index; //已经计算过，公共的部分
+                 *     u4              attribute_length; //已经计算过，公共的部分
+                 *     u2              num_annotations;
+                 *     type_annotation annotations[num_annotations];
+                 * }
+                 */
                 visibleTypeAnnotationOffsets =
                         readTypeAnnotations(methodVisitor, context, currentOffset, /* visible = */ true);
                 // Here we do not extract the labels corresponding to the attribute content. This would
@@ -1699,6 +1786,14 @@ public class ClassReader {
                         readTypeAnnotations(methodVisitor, context, currentOffset, /* visible = */ false);
                 // Same comment as above for the RuntimeVisibleTypeAnnotations attribute.
             } else if (Constants.STACK_MAP_TABLE.equals(attributeName)) {
+                /**
+                 * StackMapTable_attribute {
+                 *     u2              attribute_name_index;
+                 *     u4              attribute_length;
+                 *     u2              number_of_entries;
+                 *     stack_map_frame entries[number_of_entries];
+                 * }
+                 */
                 if ((context.parsingOptions & SKIP_FRAMES) == 0) {
                     stackMapFrameOffset = currentOffset + 2;
                     stackMapTableEndOffset = currentOffset + attributeLength;
@@ -3192,6 +3287,15 @@ public class ClassReader {
         int currentOffset = header + 8 + readUnsignedShort(header + 6) * 2;
 
         // Read the fields_count field.
+        /**
+         * field_info{
+         *     u2 access_flags,
+         *     u2 name_index,
+         *     u2 descriptor_index,
+         *     u2 attributes_count,
+         *     n attribute_info
+         * }
+         */
         int fieldsCount = readUnsignedShort(currentOffset);
         currentOffset += 2;
         // Skip the 'fields' array field.
@@ -3207,6 +3311,15 @@ public class ClassReader {
                 // Read the attribute_length field (2 bytes after the start of the attribute_info) and skip
                 // this many bytes, plus 6 for the attribute_name_index and attribute_length fields
                 // (yielding the total size of the attribute_info structure).
+                /**
+                 * attribute_info{
+                 *     u2 attribute_name_index,
+                 *     u4 attribute_length,
+                 *     u1 info[attribute_length]
+                 * }
+                 *
+                 * 其中 readInt(currentOffset + 2) 获取 attribute_length
+                 */
                 currentOffset += 6 + readInt(currentOffset + 2);
             }
         }
@@ -3214,10 +3327,26 @@ public class ClassReader {
         // Skip the methods_count and 'methods' fields, using the same method as above.
         int methodsCount = readUnsignedShort(currentOffset);
         currentOffset += 2;
+        /**
+         * method_info {
+         *     u2 access_flags,
+         *     u2 name_index,
+         *     u2 descriptor_index,
+         *     u2 attributes_count,
+         *     n attribute_info
+         * }
+         */
         while (methodsCount-- > 0) {
             int attributesCount = readUnsignedShort(currentOffset + 6);
             currentOffset += 8;
             while (attributesCount-- > 0) {
+                /**
+                 * attribute_info {
+                 *     u2 attribute_name_index,
+                 *     u4 attribute_length,
+                 *     u1 info[attribute_length]
+                 * }
+                 */
                 currentOffset += 6 + readInt(currentOffset + 2);
             }
         }
@@ -3408,6 +3537,13 @@ public class ClassReader {
      */
     // DontCheck(AbbreviationAsWordInName): can't be renamed (for backward binary compatibility).
     public String readUTF8(final int offset, final char[] charBuffer) {
+        /**
+         * 获取 CONSTANT_UTF8_info 对于数组的下标 constantPoolEntryIndex。
+         * CONSTANT_Class_info: {
+         *     tag : u1
+         *     index : u2 --> 指向CONSTANT_Utf8_info的index，也就是对于数组的下标。
+         * }
+         */
         int constantPoolEntryIndex = readUnsignedShort(offset);
         if (offset == 0 || constantPoolEntryIndex == 0) {
             return null;
@@ -3417,6 +3553,15 @@ public class ClassReader {
 
     /**
      * Reads a CONSTANT_Utf8 constant pool entry in {@link #b}.
+     * 1.根据下标先从constantUtf8Values缓存中获取constantPoolEntryIndex索引的值
+     *      a.如果不为null，则直接返回对于的字符串
+     *      b.如果为null，则classFileBuffer byte[]中读取()
+     *
+     * CONSTANT_Utf8_info {
+     *     tag: u1,
+     *     length: u2, ----> cpInfoOffset 对应length的起始偏移量, readUnsignedShort(cpInfoOffset) 算出bytes的长度.
+     *     bytes: length
+     * }
      *
      * @param constantPoolEntryIndex the index of a CONSTANT_Utf8 entry in the class's constant pool
      *                               table.

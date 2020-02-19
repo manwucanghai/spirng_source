@@ -109,24 +109,28 @@ public class ClassWriter extends ClassVisitor {
     /**
      * The fields of this class, stored in a linked list of {@link FieldWriter} linked via their
      * {@link FieldWriter#fv} field. This field stores the first element of this list.
+     * 字段链表头节点。
      */
     private FieldWriter firstField;
 
     /**
      * The fields of this class, stored in a linked list of {@link FieldWriter} linked via their
      * {@link FieldWriter#fv} field. This field stores the last element of this list.
+     * 链表形式，存储字段信息，链表最后一个节点
      */
     private FieldWriter lastField;
 
     /**
      * The methods of this class, stored in a linked list of {@link MethodWriter} linked via their
      * {@link MethodWriter#mv} field. This field stores the first element of this list.
+     * 方法链表头节点
      */
     private MethodWriter firstMethod;
 
     /**
      * The methods of this class, stored in a linked list of {@link MethodWriter} linked via their
      * {@link MethodWriter#mv} field. This field stores the last element of this list.
+     * 链表形式，存储方法信息，链表最后一个节点
      */
     private MethodWriter lastMethod;
 
@@ -282,15 +286,13 @@ public class ClassWriter extends ClassVisitor {
     // -----------------------------------------------------------------------------------------------
 
     @Override
-    public final void visit(
-            final int version,
-            final int access,
-            final String name,
-            final String signature,
-            final String superName,
-            final String[] interfaces) {
+    public final void visit(final int version, final int access, final String name, final String signature,
+                            final String superName, final String[] interfaces) {
         this.version = version;
         this.accessFlags = access;
+        /**
+         * 1.往symbolTable中的constantPool添加版本号，及className。
+         */
         this.thisClass = symbolTable.setMajorVersionAndClassName(version & 0xFFFF, name);
         if (signature != null) {
             this.signatureIndex = symbolTable.addConstantUtf8(signature);

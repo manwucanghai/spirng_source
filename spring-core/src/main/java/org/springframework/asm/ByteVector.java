@@ -37,6 +37,7 @@ public class ByteVector {
 
     /**
      * The content of this vector. Only the first {@link #length} bytes contain real data.
+     * 用来存放字节码数据
      */
     byte[] data;
 
@@ -252,7 +253,15 @@ public class ByteVector {
             throw new IllegalArgumentException("UTF8 string too large");
         }
         int currentLength = length;
+        /**
+         * CONSTANT_Utf8_info {
+         *    tag: u1,
+         *    length: u2,
+         *    bytes: length
+         *  }
+         */
         if (currentLength + 2 + charLength > data.length) {
+            //自动提前扩容。
             enlarge(2 + charLength);
         }
         byte[] currentData = data;
@@ -260,10 +269,16 @@ public class ByteVector {
         // (which requires two loops), we assume the byte length is equal to char length (which is the
         // most frequent case), and we start serializing the string right away. During the
         // serialization, if we find that this assumption is wrong, we continue with the general method.
+        /**
+         * length 占用2个字节，分为前8位和后8位。
+         */
         currentData[currentLength++] = (byte) (charLength >>> 8);
         currentData[currentLength++] = (byte) charLength;
         for (int i = 0; i < charLength; ++i) {
             char charValue = stringValue.charAt(i);
+            /**
+             * ASCII: 1 ~ 127
+             */
             if (charValue >= '\u0001' && charValue <= '\u007F') {
                 currentData[currentLength++] = (byte) charValue;
             } else {
