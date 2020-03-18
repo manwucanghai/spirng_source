@@ -603,12 +603,22 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
+				/**
+				 * 注册BeanPostProcessor 到singletonObjects中。
+				 * 例如：AnnotationAwareAspectJAutoProxyCreator 用于做AOP动态代理使用.
+				 */
 				registerBeanPostProcessors(beanFactory);
 
 				// Initialize message source for this context.
 				initMessageSource();
 
 				// Initialize event multicaster for this context.
+				/**
+				 * 初始化ApplicationEventMulticaster，用于后续进行广播消息，发布使用。
+				 * 1.先从容器中获取，是否存在applicationEventMulticaster的bean,如果存在，则获取该bean实例，
+				 * 如果不存在，则创建 SimpleApplicationEventMulticaster实例，并注册到singletonObjects容器中
+				 * 2.将该实例赋值给this.applicationEventMulticaster.
+				 */
 				initApplicationEventMulticaster();
 
 				// Initialize other special beans in specific context subclasses.

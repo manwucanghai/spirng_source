@@ -359,11 +359,18 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		}
 
 		// Create proxy if we have advice.
+		/**
+		 * 创建代理示例对象
+		 */
 		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
 		if (specificInterceptors != DO_NOT_PROXY) {
 			this.advisedBeans.put(cacheKey, Boolean.TRUE);
 			Object proxy = createProxy(
 					bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
+			/**
+			 * 添加到代理类缓存中。
+			 * Spring 在判断类型的时候，会从调用 predictBeanType方法来proxyType获取bean的类型。
+			 */
 			this.proxyTypes.put(cacheKey, proxy.getClass());
 			return proxy;
 		}
@@ -458,6 +465,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			@Nullable Object[] specificInterceptors, TargetSource targetSource) {
 
 		if (this.beanFactory instanceof ConfigurableListableBeanFactory) {
+			/**
+			 * 给 beanDefinition设置目标类(未进行代理前的那个class.)
+			 */
 			AutoProxyUtils.exposeTargetClass((ConfigurableListableBeanFactory) this.beanFactory, beanName, beanClass);
 		}
 
@@ -466,16 +476,30 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 
 		if (!proxyFactory.isProxyTargetClass()) {
 			if (shouldProxyTargetClass(beanClass, beanName)) {
+				/**
+				 * 设置采用CGLIB标识
+				 */
 				proxyFactory.setProxyTargetClass(true);
 			}
 			else {
+				/**
+				 * 获取所有接口，并设置采用JDK动态代理方式标识
+				 */
 				evaluateProxyInterfaces(beanClass, proxyFactory);
 			}
 		}
 
 		Advisor[] advisors = buildAdvisors(beanName, specificInterceptors);
 		proxyFactory.addAdvisors(advisors);
+		/**
+		 * 将原来的bean实例(也就是目标类) 设置给advised, 在调用JdkDynamicAopProxy的invoke方法时，会进行调用该目标类，真正执行具体方法。
+		 * org.springframework.aop.framework.JdkDynamicAopProxy#invoke()
+		 * JdkDynamicAopProxy实现了InvocationHandler接口。
+		 */
 		proxyFactory.setTargetSource(targetSource);
+		/**
+		 * 提供给用户自行扩展点。
+		 */
 		customizeProxyFactory(proxyFactory);
 
 		proxyFactory.setFrozen(this.freezeProxy);
@@ -483,6 +507,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			proxyFactory.setPreFiltered(true);
 		}
 
+		/**
+		 * 获取最终的代理类。
+		 */
 		return proxyFactory.getProxy(getProxyClassLoader());
 	}
 

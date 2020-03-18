@@ -1,5 +1,6 @@
 package com.zws.spring;
 
+import com.zws.spring.controller.TestController;
 import com.zws.spring.entity.TestBean;
 import com.zws.spring.entity.UserInfo;
 import com.zws.spring.service.*;
@@ -14,19 +15,26 @@ import org.springframework.context.annotation.ImportResource;
  */
 
 @ComponentScan(value = {"com.zws.spring"})
-@EnableAspectJAutoProxy(proxyTargetClass = true)
+@EnableAspectJAutoProxy()
 //@ImportResource(value = {"classpath:spring.xml"})
 public class SpringApplication {
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext();
 		ac.register(SpringApplication.class);
 		ac.refresh();
+		ac.start();
 
-//		aopDeclareParentsAnnotation(ac);
+		TestController controller = ac.getBean(TestController.class);
+		controller.testStr();
 
-//		manualBeanRegister(ac);
-
-		normalAop(ac);
+		IUserService userAService = (IUserService) ac.getBean("userAService");
+		System.out.println(userAService.getName());
+//
+////		aopDeclareParentsAnnotation(ac);
+//
+////		manualBeanRegister(ac);
+//
+//		normalAop(ac);
 
 
 	}
@@ -39,17 +47,17 @@ public class SpringApplication {
 //
 //		}
 //		System.out.println(bean);
-		UserAService userAService = ac.getBean(UserAService.class);
-		userAService.userBService.setName("userAService depends");
-		UserBService userBService = ac.getBean(UserBService.class);
-		System.out.println(userAService.userBService.getName());
-		System.out.println(userBService.getName());
-		System.out.println(userAService.userBService.hashCode());
-		System.out.println(userBService.hashCode());
-
-		userBService.setName("UserB");
-		System.out.println(userAService.userBService.getName());
-		System.out.println(userBService.getName());
+//		UserAService userAService = ac.getBean(UserAService.class);
+//		userAService.userBService.setName("userAService depends");
+//		UserBService userBService = ac.getBean(UserBService.class);
+//		System.out.println(userAService.userBService.getName());
+//		System.out.println(userBService.getName());
+//		System.out.println(userAService.userBService.hashCode());
+//		System.out.println(userBService.hashCode());
+//
+//		userBService.setName("UserB");
+//		System.out.println(userAService.userBService.getName());
+//		System.out.println(userBService.getName());
 //		IUserService userAService = (IUserService) ac.getBean("userAService");
 //		System.out.println(userAService.getName());
 //		System.out.println(userAService.service);

@@ -741,6 +741,9 @@ public abstract class ClassUtils {
 	 * <p>If the class itself is an interface, it gets returned as sole interface.
 	 * @param clazz the class to analyze for interfaces
 	 * @return all interfaces that the given object implements as a Set
+	 *
+	 *
+	 * 获取当前clazz的所有接口，包括递归查找父类的所有接口
 	 */
 	public static Set<Class<?>> getAllInterfacesForClassAsSet(Class<?> clazz) {
 		return getAllInterfacesForClassAsSet(clazz, null);

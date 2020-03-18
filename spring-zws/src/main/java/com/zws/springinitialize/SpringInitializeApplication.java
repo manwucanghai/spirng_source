@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Import;
  * @author zhengws
  * @date 2020-01-18 21:02
  */
-@ComponentScan(value = {"com.zws.springinitialize"}, nameGenerator = MyBeanNameGenerator.class) //自定义beanName生成器
-//@ComponentScan(value = {"com.zws.springinitialize"})
+//@ComponentScan(value = {"com.zws.springinitialize"}, nameGenerator = MyBeanNameGenerator.class) //自定义beanName生成器
+@ComponentScan(value = {"com.zws.springinitialize"})
 //@Import(value = {NomalClass.class})
 public class SpringInitializeApplication {
 	public static void main(String[] args) {

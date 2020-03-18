@@ -15,7 +15,7 @@ public class UserBService implements IUserService {
     private String name;
 
     @Autowired
-    public UserAService userAService;
+    public IUserService userAService;
 
     public UserBService() {
         System.out.println("UserB Service constructor running ...");

@@ -444,6 +444,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             if (current == null) {
                 return result;
             }
+            /**
+             * 获取到代理对象后，替换掉原来的对象
+             */
             result = current;
         }
         return result;
@@ -681,6 +684,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         Class<?> targetType = determineTargetType(beanName, mbd, typesToMatch);
         // Apply SmartInstantiationAwareBeanPostProcessors to predict the
         // eventual type after a before-instantiation shortcut.
+        /**
+         * AOP是基于实现SmartInstantiationAwareBeanPostProcessors接口
+         */
         if (targetType != null && !mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
             for (BeanPostProcessor bp : getBeanPostProcessors()) {
                 if (bp instanceof SmartInstantiationAwareBeanPostProcessor) {
@@ -1159,7 +1165,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      * @return the bean object to use instead of a default instance of the target bean, or {@code null}
      * @see InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation
      * <p>
-     * AnnotationAwareAspectJAutoProxyCreator 如果开启@EnableAspectJAutoProxy的话，会调用该类的postProcessBeforeInstantiation方法
+     * 如果开启@EnableAspectJAutoProxy的话，会调用 AnnotationAwareAspectJAutoProxyCreator 类的postProcessBeforeInstantiation方法
      * 进行判断该beanClass是否是切面，如果是切面，则将beanClass缓存标识为false,代表不进行创建代理类。
      */
     @Nullable
@@ -1851,6 +1857,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                     beanName, "Invocation of init method failed", ex);
         }
         if (mbd == null || !mbd.isSynthetic()) {
+            /**
+             * 执行 BeanPostProcessor 的所有postProcessAfterInitialization方法
+             * 其中AOP就是基于这个方法，来生成bean的代理类。
+             * AbstractAutoProxyCreator
+             */
             wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
         }
 

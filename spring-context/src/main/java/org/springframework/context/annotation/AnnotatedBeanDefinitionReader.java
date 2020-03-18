@@ -224,7 +224,8 @@ public class AnnotatedBeanDefinitionReader {
 		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(beanClass);
 
 		/**
-		 * 判断这个类是否跳过解析,没看懂具体是判断啥？？
+		 * 判断这个类是否跳过解析
+		 * 判断规则为，如果该类配置了@Conditional注解，先根据注解规则匹配。
 		 */
 		if (this.conditionEvaluator.shouldSkip(abd.getMetadata())) {
 			return;

@@ -141,10 +141,16 @@ class ConfigurationClassBeanDefinitionReader {
 			registerBeanDefinitionForImportedConfigurationClass(configClass);
 		}
 		for (BeanMethod beanMethod : configClass.getBeanMethods()) {
+			/**
+			 * 注册被@Bean 注解的方法bean.
+			 */
 			loadBeanDefinitionsForBeanMethod(beanMethod);
 		}
 
 		loadBeanDefinitionsFromImportedResources(configClass.getImportedResources());
+		/**
+		 * 调用ImportBeanDefinitionRegistrar回调方法.
+		 */
 		loadBeanDefinitionsFromRegistrars(configClass.getImportBeanDefinitionRegistrars());
 	}
 
@@ -363,7 +369,7 @@ class ConfigurationClassBeanDefinitionReader {
 	}
 
 	/**
-	 * 循环调用ImportBeanDefinitionRegistrar实现类的 registerBeanDefinitions方法。
+	 * 调用ImportBeanDefinitionRegistrar实现类的 registerBeanDefinitions方法。
 	 * @param registrars
 	 */
 	private void loadBeanDefinitionsFromRegistrars(Map<ImportBeanDefinitionRegistrar, AnnotationMetadata> registrars) {

@@ -42,7 +42,7 @@ public interface ConfigurableWebEnvironment extends ConfigurableEnvironment {
 	 * @param servletContext the {@link ServletContext} (may not be {@code null})
 	 * @param servletConfig the {@link ServletConfig} ({@code null} if not available)
 	 * @see org.springframework.web.context.support.WebApplicationContextUtils#initServletPropertySources(
-	 * org.springframework.core.env.MutablePropertySources, ServletContext, ServletConfig)
+	 * org.springframework.core.env.MutablePropertySourcesinitPropertySources, ServletContext, ServletConfig)
 	 */
 	void initPropertySources(@Nullable ServletContext servletContext, @Nullable ServletConfig servletConfig);
 
